@@ -1,0 +1,68 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+*.egg-info/
+.pytest_cache/
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-arg.txt
+
+# Unit test / coverage reports
+.tox/
+.coverage
+.coverage.*
+.hypothesis/
+htmlcov/
+.nox/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Django-specific
+*.log
+*.pot
+*.mo
+*.xml
+db.sqlite3
+media/
+
+# Environment variables
+.env
+.flaskenv
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Virtual environment
+venv/
+env/
+
+# My IDE
+.idea/
