@@ -1,6 +1,6 @@
 from django.db import models
 from common.models import BaseModel
-from models import CustomUser
+from authapp.models import CustomUser
 
 
 class SellerProfile(BaseModel):

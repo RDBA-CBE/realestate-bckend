@@ -1,13 +1,23 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .viewsets.views import RegistrationAPIView, LoginAPIView, UserProfileAPIView, AdminUserViewSet
+from authapp.viewsets import (
+    AddressViewSet,
+    CustomUserViewSet,
+    AdminProfileViewSet,
+    BuyerProfileViewSet,
+    SellerProfileViewSet,
+    AgentProfileViewSet,
+)
 
 router = DefaultRouter()
-router.register(r'users', AdminUserViewSet)
+
+router.register(r'addresses', AddressViewSet)
+router.register(r'users', CustomUserViewSet)
+router.register(r'admin-profiles', AdminProfileViewSet)
+router.register(r'buyer-profiles', BuyerProfileViewSet)
+router.register(r'seller-profiles', SellerProfileViewSet)
+router.register(r'agent-profiles', AgentProfileViewSet)
 
 urlpatterns = [
-    path('register/', RegistrationAPIView.as_view(), name='register'),
-    path('login/', LoginAPIView.as_view(), name='login'),
-    path('profile/', UserProfileAPIView.as_view(), name='profile'),
-    path('admin/', include(router.urls)),
+    path('', include(router.urls)),
 ]
