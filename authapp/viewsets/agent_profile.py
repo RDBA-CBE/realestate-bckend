@@ -1,7 +1,7 @@
 from common.viewset import BaseViewSet
 from rest_framework.permissions import IsAuthenticated
 from authapp.models import AgentProfile
-from authapp.serializers.agentprofile import (
+from authapp.serializers.agent_profile import (
     AgentProfileCreateSerializer,
     AgentProfileListSerializer,
     AgentProfileDetailSerializer,

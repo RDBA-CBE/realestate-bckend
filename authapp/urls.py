@@ -7,16 +7,20 @@ from authapp.viewsets import (
     BuyerProfileViewSet,
     SellerProfileViewSet,
     AgentProfileViewSet,
+    AuthViewSet,
+    PasswordResetViewSet,
 )
 
 router = DefaultRouter()
 
-router.register(r'addresses', AddressViewSet)
-router.register(r'users', CustomUserViewSet)
-router.register(r'admin-profiles', AdminProfileViewSet)
-router.register(r'buyer-profiles', BuyerProfileViewSet)
-router.register(r'seller-profiles', SellerProfileViewSet)
-router.register(r'agent-profiles', AgentProfileViewSet)
+router.register(r'addresses', AddressViewSet, basename="addresses")
+router.register(r'users', CustomUserViewSet, basename="users")
+router.register(r'admin-profiles', AdminProfileViewSet, basename="admin-profiles")
+router.register(r'buyer-profiles', BuyerProfileViewSet, basename="buyer-profiles")
+router.register(r'seller-profiles', SellerProfileViewSet, basename="seller-profiles")
+router.register(r'agent-profiles', AgentProfileViewSet, basename="agent-profiles")
+router.register(r'authentication', AuthViewSet, basename="authentication")
+router.register(r'password-reset', PasswordResetViewSet, basename="password-reset")
 
 urlpatterns = [
     path('', include(router.urls)),

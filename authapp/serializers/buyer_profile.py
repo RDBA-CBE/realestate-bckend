@@ -7,11 +7,6 @@ class BuyerProfileCreateSerializer(BaseSerializer):
         model = BuyerProfile
         fields = "__all__"
         read_only_fields = ["created_by", "updated_by"]
-        extra_kwargs = {
-            "user": {"required": True},
-            "phone_number": {"required": True},
-            "address": {"required": True},
-        }
 
 class BuyerProfileListSerializer(BaseSerializer):
     class Meta:
@@ -30,8 +25,3 @@ class BuyerProfileUpdateSerializer(BaseSerializer):
         model = BuyerProfile
         fields = "__all__"
         read_only_fields = ["created_by", "updated_by"]
-        extra_kwargs = {
-            "user": {"required": False},
-            "phone_number": {"required": False},
-            "address": {"required": False},
-        }

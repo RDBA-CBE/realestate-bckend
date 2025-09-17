@@ -1,7 +1,7 @@
 from common.viewset import BaseViewSet
 from rest_framework.permissions import IsAuthenticated
 from authapp.models import BuyerProfile
-from authapp.serializers.buyerprofile import (
+from authapp.serializers.buyer_profile import (
     BuyerProfileCreateSerializer,
     BuyerProfileListSerializer,
     BuyerProfileDetailSerializer,
