@@ -1,5 +1,6 @@
 from common.viewset import BaseViewSet
 from rest_framework.permissions import IsAuthenticated
+from authapp.filters.customuser import CustomUserFilter
 from authapp.models import CustomUser
 
 from authapp.serializers.customuser import (
@@ -12,6 +13,7 @@ from authapp.serializers.customuser import (
 class CustomUserViewSet(BaseViewSet):
     queryset = CustomUser.objects.all()
     permission_classes = [IsAuthenticated]
+    filterset_class = CustomUserFilter
 
     def get_queryset(self):
         user = self.request.user

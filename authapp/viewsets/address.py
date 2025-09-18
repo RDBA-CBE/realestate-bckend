@@ -1,6 +1,7 @@
 from common.viewset import BaseViewSet
 from rest_framework.permissions import IsAuthenticated
 from authapp.models import Address, CustomUser
+from authapp.filters.address import AddressFilter
 from authapp.serializers.address import (
     AddressCreateSerializer,
     AddressListSerializer,
@@ -11,6 +12,7 @@ from authapp.serializers.address import (
 class AddressViewSet(BaseViewSet):
     queryset = Address.objects.all()
     permission_classes = [IsAuthenticated]
+    filterset_class = AddressFilter
 
     def get_queryset(self):
         user = self.request.user

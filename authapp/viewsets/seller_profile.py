@@ -1,5 +1,6 @@
 from common.viewset import BaseViewSet
 from rest_framework.permissions import IsAuthenticated
+from authapp.filters.seller_profile import SellerProfileFilter
 from authapp.models import SellerProfile
 from authapp.serializers.seller_profile import (
     SellerProfileCreateSerializer,
@@ -11,6 +12,7 @@ from authapp.serializers.seller_profile import (
 class SellerProfileViewSet(BaseViewSet):
     queryset = SellerProfile.objects.all()
     permission_classes = [IsAuthenticated]
+    filterset_class = SellerProfileFilter
 
     def get_queryset(self):
         user = self.request.user

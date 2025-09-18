@@ -10,7 +10,7 @@ from authapp.serializers.buyer_profile import (
     BuyerProfileDetailSerializer,
     BuyerProfileUpdateSerializer,
 )
-from authapp.serializers.seller_profile import (
+from authapp.serializers.sellerprofile import (
     SellerProfileCreateSerializer,
     SellerProfileListSerializer,
     SellerProfileDetailSerializer,

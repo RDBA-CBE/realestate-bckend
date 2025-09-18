@@ -1,16 +1,18 @@
+from common.viewset import BaseViewSet
+from rest_framework.permissions import IsAuthenticated
+from authapp.filters.admin_profile import AdminProfileFilter
 from authapp.serializers import (
     AdminProfileCreateSerializer,
     AdminProfileListSerializer,
     AdminProfileDetailSerializer,
     AdminProfileUpdateSerializer,
 )
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
 from authapp.models import AdminProfile
 
-class AdminProfileViewSet(viewsets.ModelViewSet):
+class AdminProfileViewSet(BaseViewSet):
     queryset = AdminProfile.objects.all()
     permission_classes = [IsAuthenticated]
+    filterset_class = AdminProfileFilter
 
     def get_queryset(self):
         user = self.request.user

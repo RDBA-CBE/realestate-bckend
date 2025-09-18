@@ -9,6 +9,7 @@ from authapp.viewsets import (
     AgentProfileViewSet,
     AuthViewSet,
     PasswordResetViewSet,
+    RegistrationViewSet,
 )
 
 router = DefaultRouter()
@@ -21,6 +22,7 @@ router.register(r'seller-profiles', SellerProfileViewSet, basename="seller-profi
 router.register(r'agent-profiles', AgentProfileViewSet, basename="agent-profiles")
 router.register(r'authentication', AuthViewSet, basename="authentication")
 router.register(r'password-reset', PasswordResetViewSet, basename="password-reset")
+router.register(r'register', RegistrationViewSet, basename="register")
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 
 class BaseViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
     def perform_create(self, serializer):
         if hasattr(serializer.Meta.model, "created_by"):
             serializer.save(
