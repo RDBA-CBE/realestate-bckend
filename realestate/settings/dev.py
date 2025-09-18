@@ -1,9 +1,18 @@
 from .base import *
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.dev.sqlite3',
+   'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'realestate',
+        'USER': 'root',
+        'PASSWORD': 'root',  
+        'HOST': 'localhost',  
+        'PORT': '', 
+        'CONN_MAX_AGE': 3600,
+        'CONN_HEALTH_CHECKS': True,
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'", 
+        },
     }
 }
 
