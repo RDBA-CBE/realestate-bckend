@@ -6,3 +6,4 @@ from .buyer_profile import BuyerProfileViewSet
 from .seller_profile import SellerProfileViewSet
 from .agent_profile import AgentProfileViewSet
 from .password_reset import PasswordResetViewSet
+from .register import RegistrationViewSet

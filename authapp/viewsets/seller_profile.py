@@ -2,7 +2,7 @@ from common.viewset import BaseViewSet
 from rest_framework.permissions import IsAuthenticated
 from authapp.filters.seller_profile import SellerProfileFilter
 from authapp.models import SellerProfile
-from authapp.serializers.seller_profile import (
+from authapp.serializers import (
     SellerProfileCreateSerializer,
     SellerProfileListSerializer,
     SellerProfileDetailSerializer,
