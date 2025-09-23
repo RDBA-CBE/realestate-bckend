@@ -4,19 +4,20 @@ from authapp.serializers.admin_profile import (
     AdminProfileDetailSerializer,
     AdminProfileUpdateSerializer,
 )
-from authapp.serializers.buyer_profile import (
-    BuyerProfileCreateSerializer,
-    BuyerProfileListSerializer,
-    BuyerProfileDetailSerializer,
-    BuyerProfileUpdateSerializer,
-)
 from authapp.serializers.sellerprofile import (
     SellerProfileCreateSerializer,
     SellerProfileListSerializer,
     SellerProfileDetailSerializer,
     SellerProfileUpdateSerializer,
 )
-from authapp.serializers.agent_profile import (
+from authapp.serializers.buyerprofile import (
+    BuyerProfileCreateSerializer,
+    BuyerProfileListSerializer,
+    BuyerProfileDetailSerializer,
+    BuyerProfileUpdateSerializer,
+
+)
+from authapp.serializers.agentprofile import (
     AgentProfileCreateSerializer,
     AgentProfileListSerializer,
     AgentProfileDetailSerializer,
@@ -42,6 +43,44 @@ from authapp.serializers.auth import (
 from authapp.serializers.password_reset import (
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer,
+)
+from authapp.serializers.property import (
+    PropertyCreateSerializer,
+    PropertyListSerializer,
+    PropertyDetailSerializer,
+    PropertyUpdateSerializer,
+)
+from authapp.serializers.project import (
+    ProjectCreateSerializer,
+    ProjectListSerializer,
+    ProjectDetailSerializer,
+    ProjectUpdateSerializer
+)
+
+from authapp.serializers.propertyimage import (
+    PropertyImageCreateSerializer,
+    PropertyImageListSerializer,
+    PropertyImageDetailSerializer,
+    PropertyImageUpdateSerializer,
+)
+from authapp.serializers.propertytype import (
+    PropertyTypeCreateSerializer,
+    PropertyTypeListSerializer,
+    PropertyTypeDetailSerializer,
+    PropertyTypeUpdateSerializer,
+)
+from authapp.serializers.projectdocument import (
+    ProjectDocumentCreateSerializer,
+    ProjectDocumentListSerializer,
+    ProjectDocumentDetailSerializer,
+    ProjectDocumentUpdateSerializer,
+
+)
+from authapp.serializers.projectphase import (
+    ProjectPhaseCreateSerializer,
+    ProjectPhaseListSerializer,
+    ProjectPhaseDetailSerializer,
+    ProjectPhaseUpdateSerializer,
 )
 
 __all__ = [
@@ -74,5 +113,29 @@ __all__ = [
     "LogoutSerializer",
     "PasswordResetRequestSerializer",
     "PasswordResetConfirmSerializer",
-    
+    "PropertyCreateSerializer",
+    "PropertyListSerializer",
+    "PropertyDetailSerializer",
+    "PropertyUpdateSerializer",
+    "ProjectCreateSerializer",
+    "ProjectListSerializer",
+    "ProjectDetailSerializer",
+    "ProjectUpdateSerializer",
+    "PropertyImageCreateSerializer",
+    "PropertyImageListSerializer",
+    "PropertyImageDetailSerializer",
+    "PropertyImageUpdateSerializer",
+    "PropertyTypeCreateSerializer",
+    "PropertyTypeListSerializer",
+    "PropertyTypeDetailSerializer",
+    "PropertyTypeUpdateSerializer",
+    "ProjectDocumentCreateSerializer",
+    "ProjectDocumentListSerializer",
+    "ProjectDocumentDetailSerializer",
+    "ProjectDocumentUpdateSerializer",
+    "ProjectPhaseCreateSerializer",
+    "ProjectPhaseListSerializer",
+    "ProjectPhaseDetailSerializer",
+    "ProjectPhaseUpdateSerializer",
+
 ]

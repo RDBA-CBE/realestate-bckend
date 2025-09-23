@@ -1,0 +1,25 @@
+from rest_framework import viewsets
+from authapp.models.property import ProjectDocument
+from authapp.serializers import (
+    ProjectDocumentListSerializer,
+    ProjectDocumentDetailSerializer,
+    ProjectDocumentCreateSerializer,
+    ProjectDocumentUpdateSerializer,
+)
+
+class ProjectDocumentViewSet(viewsets.ModelViewSet):
+    queryset = ProjectDocument.objects.all()
+    http_method_names = ['get', 'post', 'patch', 'delete']
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return ProjectDocumentListSerializer
+        elif self.action == "retrieve":
+            return ProjectDocumentDetailSerializer
+        elif self.action == "create":
+            return ProjectDocumentCreateSerializer
+        elif self.action in ["update", "partial_update"]:
+            return ProjectDocumentUpdateSerializer
+        return ProjectDocumentDetailSerializer
+
+

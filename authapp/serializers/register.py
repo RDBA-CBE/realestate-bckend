@@ -8,27 +8,23 @@ from ..utils import UserGroupManager
 User = get_user_model()
 
 
+
 class RegistrationSerializer(serializers.ModelSerializer):
     """Enhanced registration serializer with user type support"""
-    
+
     USER_TYPE_CHOICES = [
         ('buyer', 'Property Buyer'),
         ('seller', 'Property Seller'),
         ('agent', 'Real Estate Agent'),
         ('developer', 'Property Developer'),
     ]
-    
+
     user_type = serializers.ChoiceField(
         choices=USER_TYPE_CHOICES,
         default='buyer',
         help_text="Select your role in the real estate platform"
     )
     password = serializers.CharField(write_only=True, min_length=8)
-    password2 = serializers.CharField(
-        style={"input_type": "password"}, 
-        write_only=True,
-        label="Confirm Password"
-    )
     terms_accepted = serializers.BooleanField(
         write_only=True,
         help_text="You must accept the terms and conditions"
@@ -39,8 +35,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'email', 'first_name', 'last_name', 'phone', 
-            'user_type', 'password', 'password2', 'terms_accepted'
+            'email', 'first_name', 'last_name', 'phone',
+            'user_type', 'password', 'terms_accepted'
         ]
         extra_kwargs = {
             'password': {'write_only': True},
@@ -57,59 +53,52 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         """Validate registration data"""
-        # Check if passwords match
-        if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({
-                'password2': 'Passwords must match.'
-            })
-        
         # Check if terms are accepted
         if not attrs.get('terms_accepted'):
             raise serializers.ValidationError({
                 'terms_accepted': 'You must accept the terms and conditions.'
             })
-        
+
         # Validate email uniqueness
         if User.objects.filter(email=attrs['email']).exists():
             raise serializers.ValidationError({
                 'email': 'A user with this email already exists.'
             })
-        
+
         return attrs
 
     def create(self, validated_data):
         """Create user with appropriate group assignment"""
         # Remove fields not needed for user creation
         user_type = validated_data.pop('user_type')
-        validated_data.pop('password2')
         validated_data.pop('terms_accepted')
-        
+
         # Create user
         password = validated_data.pop('password')
         user = User(**validated_data)
         user.set_password(password)
-        
+
         # Store user type for signal handler
         user._user_type = user_type
-        
+
         # Set initial account status based on user type
         if UserGroupManager.get_instant_access(user_type):
             user.account_status = 'verified'  # Will be set to approved after email verification
         else:
             user.account_status = 'unverified'
-        
+
         user.save()
-        
+
         return user
 
     def to_representation(self, instance):
         """Customize response data"""
         data = super().to_representation(instance)
-        
+
         # Add user type and workflow information
         user_type = instance.user_type
         workflow = UserGroupManager.get_approval_workflow(user_type)
-        
+
         data.update({
             'user_type': user_type,
             'account_status': instance.account_status,
@@ -117,11 +106,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
             'next_steps': workflow['steps'],
             'workflow_message': workflow.get('approval_message', '')
         })
-        
+
         # Remove sensitive information
         data.pop('password', None)
-        data.pop('password2', None)
-        
+
         return data
 
 

@@ -1,25 +1,69 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from common.models import BaseModel
+
 from .customuser import CustomUser
 
 
+# Developer Project Models
+class Project(BaseModel):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    location = models.CharField(max_length=255)
+    developer = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='projects'
+    )
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    status = models.CharField(max_length=50, default='planning')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+    
+class ProjectPhase(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='phases')
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.project.name})"
+
+
+class ProjectDocument(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='documents')
+    file = models.FileField(upload_to='project_documents/')
+    name = models.CharField(max_length=255)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.project.name})"
+    
+class PropertyType(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name
+
+class Amenity(BaseModel):
+    has_balcony = models.BooleanField(default=False)
+    has_garden = models.BooleanField(default=False)
+    has_swimming_pool = models.BooleanField(default=False)
+    has_gym = models.BooleanField(default=False)
+    has_elevator = models.BooleanField(default=False)
+    has_security = models.BooleanField(default=False)
+    has_power_backup = models.BooleanField(default=False)
+    has_air_conditioning = models.BooleanField(default=False)
+    pet_friendly = models.BooleanField(default=False)
+
+
 class Property(BaseModel):
-    PROPERTY_TYPE_CHOICES = [
-        ('apartment', 'Apartment'),
-        ('house', 'House'),
-        ('condo', 'Condo'),
-        ('townhouse', 'Townhouse'),
-        ('villa', 'Villa'),
-        ('studio', 'Studio'),
-        ('duplex', 'Duplex'),
-        ('penthouse', 'Penthouse'),
-        ('commercial', 'Commercial'),
-        ('office', 'Office'),
-        ('warehouse', 'Warehouse'),
-        ('land', 'Land'),
-        ('other', 'Other'),
-    ]
 
     LISTING_TYPE_CHOICES = [
         ('sale', 'For Sale'),
@@ -51,9 +95,10 @@ class Property(BaseModel):
     ]
 
     # Basic Information
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="properties", null=True, blank=True)
     title = models.CharField(max_length=255)
     description = models.TextField()
-    property_type = models.CharField(max_length=20, choices=PROPERTY_TYPE_CHOICES)
+    property_type = models.ForeignKey(PropertyType, on_delete=models.SET_NULL, null=True, related_name='properties')
     listing_type = models.CharField(max_length=10, choices=LISTING_TYPE_CHOICES)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
 
@@ -137,17 +182,13 @@ class Property(BaseModel):
     )
     parking_spaces = models.PositiveIntegerField(default=0)
     
-    # Amenities (Boolean fields for common amenities)
-    has_balcony = models.BooleanField(default=False)
-    has_garden = models.BooleanField(default=False)
-    has_swimming_pool = models.BooleanField(default=False)
-    has_gym = models.BooleanField(default=False)
-    has_elevator = models.BooleanField(default=False)
-    has_security = models.BooleanField(default=False)
-    has_power_backup = models.BooleanField(default=False)
-    has_air_conditioning = models.BooleanField(default=False)
-    pet_friendly = models.BooleanField(default=False)
-
+    amenities = models.ForeignKey(
+        'Amenity',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='properties'
+    )
     # Availability
     available_from = models.DateField(null=True, blank=True)
     
