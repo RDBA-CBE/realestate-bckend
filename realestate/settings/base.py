@@ -13,7 +13,7 @@ SECRET_KEY = 'django-insecure--mqx_jhb3=kuf$v^zle+t%y5hu-7dy-oqv=8x3%)==)4dd$g6b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["31.97.206.165"]
+ALLOWED_HOSTS = ["31.97.206.165", "localhost", '127.0.0.1']
 
 
 # Application definition
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'REALESTATE API',
-    # 'DESCRIPTION': 'Your project description',
+    'DESCRIPTION': 'API for Realestate Application',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
@@ -47,6 +47,8 @@ SPECTACULAR_SETTINGS = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_FILTER_BACKENDS': (

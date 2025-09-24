@@ -30,14 +30,23 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
+
 class LoginResponseSerializer(serializers.Serializer):
-    refresh = serializers.CharField()
     access = serializers.CharField()
+    refresh = serializers.CharField()
     user_id = serializers.IntegerField()
     email = serializers.EmailField()
     groups = serializers.ListField(
         child=serializers.CharField()
     )
 
+# For logout endpoint
 class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+
+
+
+# For refresh token endpoint
+class RefreshTokenSerializer(serializers.Serializer):
     refresh = serializers.CharField()

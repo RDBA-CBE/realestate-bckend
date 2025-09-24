@@ -1,4 +1,4 @@
-from common.viewset import BaseViewSet
+from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from authapp.filters.customuser import CustomUserFilter
 from authapp.models import CustomUser
@@ -10,16 +10,21 @@ from authapp.serializers.customuser import (
     CustomUserUpdateSerializer,
 )
 
-class CustomUserViewSet(BaseViewSet):
+class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     permission_classes = [IsAuthenticated]
+    http_method_names = ['post', 'get', 'patch', 'delete']
     filterset_class = CustomUserFilter
 
     def get_queryset(self):
         user = self.request.user
         if user.groups.filter(name="Admin").exists():
             return CustomUser.objects.all()
-        return CustomUser.objects.filter(created_by=user)
+        return (
+                CustomUser.objects
+                .exclude(groups__name="Admin")
+                .exclude(id=user.id)
+            )
 
     def get_serializer_class(self):
         if self.action == "list":

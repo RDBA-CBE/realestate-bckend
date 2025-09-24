@@ -62,6 +62,9 @@ class Amenity(BaseModel):
     has_air_conditioning = models.BooleanField(default=False)
     pet_friendly = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"Amenities {self.id}"
+
 
 class Property(BaseModel):
 

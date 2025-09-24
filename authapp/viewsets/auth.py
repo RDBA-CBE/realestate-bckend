@@ -6,13 +6,32 @@ from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
 from authapp.serializers.auth import (
     LoginSerializer, LoginResponseSerializer, 
-    LogoutSerializer
+    LogoutSerializer, RefreshTokenSerializer
 )
 
 User = get_user_model()
 
 
 class AuthViewSet(viewsets.ViewSet):
+    
+    @extend_schema(
+        request=RefreshTokenSerializer,
+        responses={"200": {"access": "New access token"}},
+        summary="Refresh JWT access token",
+        description="Pass a valid refresh token to get a new access token."
+    )
+    @action(detail=False, methods=["post"], url_path="refresh-token")
+    def refresh_token(self, request):
+        serializer = RefreshTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            refresh_token = serializer.validated_data["refresh"]
+            refresh = RefreshToken(refresh_token)
+            access_token = str(refresh.access_token)
+            return Response({"access": access_token}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_400_BAD_REQUEST)
     """
     JWT Auth ViewSet (email as username, returns groups in response)
     """
@@ -48,6 +67,10 @@ class AuthViewSet(viewsets.ViewSet):
             "user_id": user.id,
             "email": user.email,
             "groups": groups_data,
+            "name": user.get_full_name(),
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            
         }, status=status.HTTP_200_OK)
 
     @extend_schema(

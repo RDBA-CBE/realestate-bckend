@@ -13,4 +13,7 @@ from .propertyimage import PropertyImageViewSet
 from .propertytype import PropertyTypeViewSet 
 from .projectdocument import ProjectDocumentViewSet
 from .projectphase import ProjectPhaseViewSet
+from .amenity import AmenityViewSet
+
+
 

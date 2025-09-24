@@ -6,22 +6,18 @@ class CustomUserCreateSerializer(BaseSerializer):
     class Meta:
         model = CustomUser
         fields = "__all__"
-        read_only_fields = ["created_by", "updated_by"]
 
 class CustomUserListSerializer(BaseSerializer):
     class Meta:
         model = CustomUser
-        fields = "__all__"
-        read_only_fields = ["created_by", "updated_by"]
+        exclude = ['password', 'last_login', 'is_superuser', 'is_staff', 'is_active', 'date_joined']
 
 class CustomUserDetailSerializer(BaseSerializer):
     class Meta:
         model = CustomUser
         fields = "__all__"
-        read_only_fields = ["created_by", "updated_by"]
 
 class CustomUserUpdateSerializer(BaseSerializer):
     class Meta:
         model = CustomUser
-        fields = "__all__"
-        read_only_fields = ["created_by", "updated_by"]
+        exclude = ['last_login', 'is_superuser', 'is_staff', 'is_active', 'date_joined']
