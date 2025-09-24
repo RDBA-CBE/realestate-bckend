@@ -4,7 +4,7 @@ from authapp.serializers.admin_profile import (
     AdminProfileDetailSerializer,
     AdminProfileUpdateSerializer,
 )
-from authapp.serializers.sellerprofile import (
+from authapp.serializers.seller_profile import (
     SellerProfileCreateSerializer,
     SellerProfileListSerializer,
     SellerProfileDetailSerializer,
@@ -17,7 +17,7 @@ from authapp.serializers.buyerprofile import (
     BuyerProfileUpdateSerializer,
 
 )
-from authapp.serializers.agentprofile import (
+from authapp.serializers.agent_profile import (
     AgentProfileCreateSerializer,
     AgentProfileListSerializer,
     AgentProfileDetailSerializer,
@@ -45,51 +45,7 @@ from authapp.serializers.password_reset import (
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer,
 )
-from authapp.serializers.property import (
-    PropertyCreateSerializer,
-    PropertyListSerializer,
-    PropertyDetailSerializer,
-    PropertyUpdateSerializer,
-)
-from authapp.serializers.project import (
-    ProjectCreateSerializer,
-    ProjectListSerializer,
-    ProjectDetailSerializer,
-    ProjectUpdateSerializer
-)
 
-from authapp.serializers.propertyimage import (
-    PropertyImageCreateSerializer,
-    PropertyImageListSerializer,
-    PropertyImageDetailSerializer,
-    PropertyImageUpdateSerializer,
-)
-from authapp.serializers.propertytype import (
-    PropertyTypeCreateSerializer,
-    PropertyTypeListSerializer,
-    PropertyTypeDetailSerializer,
-    PropertyTypeUpdateSerializer,
-)
-from authapp.serializers.projectdocument import (
-    ProjectDocumentCreateSerializer,
-    ProjectDocumentListSerializer,
-    ProjectDocumentDetailSerializer,
-    ProjectDocumentUpdateSerializer,
-
-)
-from authapp.serializers.projectphase import (
-    ProjectPhaseCreateSerializer,
-    ProjectPhaseListSerializer,
-    ProjectPhaseDetailSerializer,
-    ProjectPhaseUpdateSerializer,
-)
-
-from authapp.serializers.amenity import (
-    AmenityCreateSerializer,
-    AmenityListSerializer,
-    AmenityDetailSerializer,
-    AmenityUpdateSerializer,
-)
 
 __all__ = [
     "AdminProfileCreateSerializer",

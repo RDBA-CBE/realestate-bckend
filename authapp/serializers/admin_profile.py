@@ -1,27 +1,22 @@
-from authapp.models import AdminProfile
-from common.serializers import BaseSerializer
+from rest_framework import serializers
+from ..models.adminprofile import AdminProfile
 
-
-class AdminProfileCreateSerializer(BaseSerializer):
+class AdminProfileListSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdminProfile
-        fields = "__all__"
-        read_only_fields = ["created_by", "updated_by"]
-        
-class AdminProfileListSerializer(BaseSerializer):
-    class Meta:
-        model = AdminProfile
-        fields = "__all__"
-        read_only_fields = ["created_by", "updated_by"]
+        fields = ['id', 'user', 'role']
 
-class AdminProfileDetailSerializer(BaseSerializer):
+class AdminProfileDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdminProfile
-        fields = "__all__"
-        read_only_fields = ["created_by", "updated_by"]
+        fields = '__all__'
 
-class AdminProfileUpdateSerializer(BaseSerializer):
+class AdminProfileCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdminProfile
-        fields = "__all__"
-        read_only_fields = ["created_by", "updated_by"]
+        fields = ['user', 'role']
+
+class AdminProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdminProfile
+        fields = ['role']

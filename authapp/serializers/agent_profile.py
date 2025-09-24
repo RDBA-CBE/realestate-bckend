@@ -1,28 +1,22 @@
-from authapp.models import AgentProfile
-from common.serializers import BaseSerializer
+from rest_framework import serializers
+from ..models.agentprofile import AgentProfile
 
-class AgentProfileCreateSerializer(BaseSerializer):
+class AgentProfileListSerializer(serializers.ModelSerializer):
     class Meta:
         model = AgentProfile
-        fields = "__all__"
-        read_only_fields = ["created_by", "updated_by"]
+        fields = ['id', 'user', 'agency_name']
 
-class AgentProfileListSerializer(BaseSerializer):
+class AgentProfileDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = AgentProfile
-        fields = "__all__"
-        read_only_fields = ["created_by", "updated_by"]
+        fields = '__all__'
 
-class AgentProfileDetailSerializer(BaseSerializer):
+class AgentProfileCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = AgentProfile
-        fields = "__all__"
-        read_only_fields = ["created_by", "updated_by"]
+        fields = ['user', 'agency_name']
 
-class AgentProfileUpdateSerializer(BaseSerializer):
+class AgentProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = AgentProfile
-        fields = "__all__"
-        read_only_fields = ["created_by", "updated_by"]
-
-        
+        fields = ['agency_name']

@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from common.paginator import Pagination
 from authapp.filters import BuyerProfileFilter
 from authapp.models import BuyerProfile
-from authapp.serializers.buyer_profile import (
+from authapp.serializers import (
     BuyerProfileCreateSerializer,
     BuyerProfileListSerializer,
     BuyerProfileDetailSerializer,
