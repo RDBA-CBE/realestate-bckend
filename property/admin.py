@@ -35,6 +35,6 @@ class PropertyTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Amenity)
 class AmenityAdmin(admin.ModelAdmin):
-    list_display = ['id', 'has_balcony', 'has_garden', 'has_swimming_pool', 'has_gym', 'has_elevator', 'has_security', 'has_power_backup', 'has_air_conditioning', 'pet_friendly']
-    list_filter = ['has_balcony', 'has_garden', 'has_swimming_pool', 'has_gym', 'has_elevator', 'has_security', 'has_power_backup', 'has_air_conditioning', 'pet_friendly']
+    list_display = ['id', 'name', 'description']
+    list_filter = ['name']
     readonly_fields = ['created_at', 'updated_at']

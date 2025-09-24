@@ -1,22 +1,23 @@
 from rest_framework import serializers
+from common.serializers import BaseSerializer
 from ..models import Amenity
 
-class AmenityListSerializer(serializers.ModelSerializer):
+class AmenityListSerializer(BaseSerializer):
     class Meta:
         model = Amenity
-        fields = ['id', 'has_balcony', 'has_garden', 'has_swimming_pool', 'has_gym', 'has_elevator', 'has_security', 'has_power_backup', 'has_air_conditioning', 'pet_friendly']
+        fields = "__all__"
 
-class AmenityDetailSerializer(serializers.ModelSerializer):
+class AmenityDetailSerializer(BaseSerializer):
     class Meta:
         model = Amenity
         fields = '__all__'
 
-class AmenityCreateSerializer(serializers.ModelSerializer):
+class AmenityCreateSerializer(BaseSerializer):
     class Meta:
         model = Amenity
-        fields = ['has_balcony', 'has_garden', 'has_swimming_pool', 'has_gym', 'has_elevator', 'has_security', 'has_power_backup', 'has_air_conditioning', 'pet_friendly']
+        fields = ['name', 'description']
 
-class AmenityUpdateSerializer(serializers.ModelSerializer):
+class AmenityUpdateSerializer(BaseSerializer):
     class Meta:
         model = Amenity
-        fields = ['has_balcony', 'has_garden', 'has_swimming_pool', 'has_gym', 'has_elevator', 'has_security', 'has_power_backup', 'has_air_conditioning', 'pet_friendly']
+        fields = ['name', 'description']
