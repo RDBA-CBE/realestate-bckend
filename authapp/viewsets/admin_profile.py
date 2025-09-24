@@ -1,6 +1,7 @@
 from common.viewset import BaseViewSet
+from common.paginator import Pagination
 from rest_framework.permissions import IsAuthenticated
-from authapp.filters.admin_profile import AdminProfileFilter
+from authapp.filters import AdminProfileFilter
 from authapp.serializers import (
     AdminProfileCreateSerializer,
     AdminProfileListSerializer,
@@ -13,6 +14,8 @@ class AdminProfileViewSet(BaseViewSet):
     queryset = AdminProfile.objects.all()
     permission_classes = [IsAuthenticated]
     filterset_class = AdminProfileFilter
+    pagination_class = Pagination
+    http_method_names = ['post', 'get', 'patch', 'delete']
 
     def get_queryset(self):
         user = self.request.user

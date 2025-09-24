@@ -1,5 +1,7 @@
 from rest_framework import viewsets
+from common.paginator import Pagination
 from ..models.property import Project
+from authapp.filters import ProjectFilter
 from ..serializers import (
     ProjectListSerializer,
     ProjectDetailSerializer,
@@ -9,6 +11,8 @@ from ..serializers import (
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
+    filterset_class = ProjectFilter
+    pagination_class = Pagination
     permission_classes = []  # Add appropriate permissions
 
     def get_serializer_class(self):

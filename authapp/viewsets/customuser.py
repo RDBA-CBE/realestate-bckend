@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from authapp.filters.customuser import CustomUserFilter
+from common.paginator import Pagination
+from authapp.filters import CustomUserFilter
 from authapp.models import CustomUser
 
 from authapp.serializers.customuser import (
@@ -15,6 +16,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     http_method_names = ['post', 'get', 'patch', 'delete']
     filterset_class = CustomUserFilter
+    pagination_class = Pagination
 
     def get_queryset(self):
         user = self.request.user

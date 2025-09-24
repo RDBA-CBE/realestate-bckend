@@ -1,6 +1,7 @@
 from common.viewset import BaseViewSet
 from rest_framework.permissions import IsAuthenticated
-from authapp.filters.agent_profile import AgentProfileFilter
+from common.paginator import Pagination
+from authapp.filters import AgentProfileFilter
 from authapp.models import AgentProfile
 from authapp.serializers.agent_profile import (
     AgentProfileCreateSerializer,
@@ -13,6 +14,7 @@ class AgentProfileViewSet(BaseViewSet):
     queryset = AgentProfile.objects.all()
     permission_classes = [IsAuthenticated]
     filterset_class = AgentProfileFilter
+    pagination_class = Pagination
 
     def get_queryset(self):
         user = self.request.user

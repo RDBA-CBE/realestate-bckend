@@ -1,5 +1,7 @@
 from rest_framework import viewsets
+from common.paginator import Pagination
 from ..models.property import Property
+from authapp.filters import PropertyFilter
 from ..serializers import (
     PropertyListSerializer, 
     PropertyDetailSerializer,
@@ -10,6 +12,8 @@ from ..serializers import (
 class PropertyViewSet(viewsets.ModelViewSet):
     queryset = Property.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
+    filterset_class = PropertyFilter
+    pagination_class = Pagination
 
     def get_serializer_class(self):
         if self.action == "list":

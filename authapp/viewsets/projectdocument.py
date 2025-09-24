@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from common.paginator import Pagination
 from authapp.models.property import ProjectDocument
 from authapp.serializers import (
     ProjectDocumentListSerializer,
@@ -10,6 +11,7 @@ from authapp.serializers import (
 class ProjectDocumentViewSet(viewsets.ModelViewSet):
     queryset = ProjectDocument.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
+    pagination_class = Pagination
 
     def get_serializer_class(self):
         if self.action == "list":

@@ -1,6 +1,7 @@
 from common.viewset import BaseViewSet
 from rest_framework.permissions import IsAuthenticated
-from authapp.filters.buyer_profile import BuyerProfileFilter
+from common.paginator import Pagination
+from authapp.filters import BuyerProfileFilter
 from authapp.models import BuyerProfile
 from authapp.serializers.buyer_profile import (
     BuyerProfileCreateSerializer,
@@ -13,6 +14,7 @@ class BuyerProfileViewSet(BaseViewSet):
     queryset = BuyerProfile.objects.all()
     permission_classes = [IsAuthenticated]
     filterset_class = BuyerProfileFilter
+    pagination_class = Pagination
 
     def get_queryset(self):
         user = self.request.user

@@ -1,7 +1,8 @@
 from common.viewset import BaseViewSet
+from common.paginator import Pagination
 from rest_framework.permissions import IsAuthenticated
 from authapp.models import Address, CustomUser
-from authapp.filters.address import AddressFilter
+from authapp.filters import AddressFilter
 from authapp.serializers.address import (
     AddressCreateSerializer,
     AddressListSerializer,
@@ -13,6 +14,8 @@ class AddressViewSet(BaseViewSet):
     queryset = Address.objects.all()
     permission_classes = [IsAuthenticated]
     filterset_class = AddressFilter
+    pagination_class = Pagination
+    http_method_names = ['post', 'get', 'patch', 'delete']
 
     def get_queryset(self):
         user = self.request.user
