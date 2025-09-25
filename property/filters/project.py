@@ -1,5 +1,5 @@
 import django_filters
-from property.models import Project
+from ..models import Project
 
 class ProjectFilter(django_filters.FilterSet):
     class Meta:

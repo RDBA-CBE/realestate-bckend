@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from property.models import PropertyImage
+from ..models import PropertyImage
 
 class PropertyImageListSerializer(serializers.ModelSerializer):
     class Meta:

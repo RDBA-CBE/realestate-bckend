@@ -1,7 +1,7 @@
 import django_filters
-from property.models import Amenity
+from ..models import Amenity
 
 class AmenityFilter(django_filters.FilterSet):
     class Meta:
         model = Amenity
-        fields = "__all__"
+        fields = ['name', 'category', 'is_active']

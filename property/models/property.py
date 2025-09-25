@@ -48,12 +48,8 @@ class Property(BaseModel):
     listing_type = models.CharField(max_length=10, choices=LISTING_TYPE_CHOICES)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
 
-    # Owner/Agent Information
-    owner = models.ForeignKey(
-        CustomUser,
-        on_delete=models.CASCADE,
-        related_name='owned_properties'
-    )
+    # Developer/Agent Information
+    developers = models.ManyToManyField(CustomUser, related_name='properties')
     agent = models.ForeignKey(
         CustomUser,
         on_delete=models.SET_NULL,
@@ -93,6 +89,36 @@ class Property(BaseModel):
     )
     floor_number = models.PositiveIntegerField(null=True, blank=True)
     total_floors = models.PositiveIntegerField(null=True, blank=True)
+    plot_area = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Plot Area (sq.ft.)"
+    )
+    land_type_zone = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        help_text="Land Type / Zone"
+    )
+    built_up_area = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Built-up Area (sq.ft.)"
+    )
+    balconies = models.PositiveIntegerField(
+        default=0,
+        help_text="Number of Balconies"
+    )
+    facing_direction = models.CharField(
+        max_length=50,
+        null=True,
+        blank=True,
+        help_text="Property Facing Direction"
+    )
 
     # Pricing Information
     price = models.DecimalField(max_digits=15, decimal_places=2)
@@ -113,6 +139,30 @@ class Property(BaseModel):
         decimal_places=2, 
         null=True, 
         blank=True
+    )
+    monthly_rent = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Monthly Rent"
+    )
+    rent_duration = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Duration (months) for rent"
+    )
+    lease_total_amount = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Lease total amount"
+    )
+    lease_duration = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Lease Duration (months)"
     )
 
     # Property Features

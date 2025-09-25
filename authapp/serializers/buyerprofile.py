@@ -4,7 +4,7 @@ from ..models.buyerprofile import BuyerProfile
 class BuyerProfileListSerializer(serializers.ModelSerializer):
     class Meta:
         model = BuyerProfile
-        fields = ['id', 'user', 'preferences']
+        fields = '__all__'
 
 class BuyerProfileDetailSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,9 +14,9 @@ class BuyerProfileDetailSerializer(serializers.ModelSerializer):
 class BuyerProfileCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BuyerProfile
-        fields = ['user', 'preferences']
+        fields = "__all__"
 
 class BuyerProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BuyerProfile
-        fields = ['preferences']
+        fields = "__all__"

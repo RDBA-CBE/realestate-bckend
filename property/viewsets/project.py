@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from common.paginator import Pagination
-from property.models import Project
-from property.filters import ProjectFilter
-from property.serializers import (
+from ..models import Project
+from ..filters.project import ProjectFilter
+from ..serializers.project import (
     ProjectListSerializer,
     ProjectDetailSerializer,
     ProjectCreateSerializer,
