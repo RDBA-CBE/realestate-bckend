@@ -62,8 +62,8 @@ class PropertyVideoAdmin(admin.ModelAdmin):
 
 @admin.register(VirtualTour)
 class VirtualTourAdmin(admin.ModelAdmin):
-    list_display = ['property', 'title', 'tour_type', 'provider', 'is_active', 'order', 'created_at']
+    list_display = ['property', 'tour_type', 'provider', 'is_active', 'order', 'created_at']
     list_filter = ['tour_type', 'provider', 'is_active', 'property']
-    search_fields = ['property__title', 'title', 'description', 'provider']
+    search_fields = ['property__title', 'description', 'provider']
     readonly_fields = ['created_at', 'updated_at']
     ordering = ['property', 'order']

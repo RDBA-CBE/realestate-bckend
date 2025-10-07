@@ -19,7 +19,6 @@ class VirtualTour(BaseModel):
         on_delete=models.CASCADE,
         related_name='virtual_tours'
     )
-    title = models.CharField(max_length=255)
     tour_url = models.URLField(help_text="Third-party virtual tour link")
     tour_type = models.CharField(max_length=50, choices=TOUR_TYPE_CHOICES, default='360_view')
     description = models.TextField(blank=True)

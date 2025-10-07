@@ -4,7 +4,7 @@ from ..models import VirtualTour
 class VirtualTourListSerializer(serializers.ModelSerializer):
     class Meta:
         model = VirtualTour
-        fields = ['id', 'title', 'tour_type', 'provider', 'thumbnail', 'is_active', 'order', 'created_at']
+        fields = ['id', 'tour_type', 'provider', 'thumbnail', 'is_active', 'order', 'created_at']
 
 class VirtualTourDetailSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,7 +15,7 @@ class VirtualTourCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = VirtualTour
         fields = [
-            'property', 'title', 'tour_url', 'tour_type', 'description', 
+            'property', 'tour_url', 'tour_type', 'description', 
             'thumbnail', 'provider', 'embed_code', 'is_active', 'order'
         ]
 
@@ -23,6 +23,6 @@ class VirtualTourUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = VirtualTour
         fields = [
-            'title', 'tour_url', 'tour_type', 'description', 
+            'tour_url', 'tour_type', 'description', 
             'thumbnail', 'provider', 'embed_code', 'is_active', 'order'
         ]
