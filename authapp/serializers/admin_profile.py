@@ -4,7 +4,7 @@ from ..models.adminprofile import AdminProfile
 class AdminProfileListSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdminProfile
-        fields = ['id', 'user', 'role']
+        fields = ['id', 'user']
 
 class AdminProfileDetailSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,9 +14,10 @@ class AdminProfileDetailSerializer(serializers.ModelSerializer):
 class AdminProfileCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdminProfile
-        fields = ['user', 'role']
+        fields = '__all__' 
 
 class AdminProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdminProfile
-        fields = ['role']
+        fields = '__all__'
+        read_only_fields = ['id', 'user']

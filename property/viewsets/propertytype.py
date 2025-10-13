@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from common.paginator import Pagination
 from ..models import PropertyType
-from property.filters import PropertyTypeFilter
-from ..serializers import (
+from ..filters.propertytype import PropertyTypeFilter
+from ..serializers.propertytype import (
     PropertyTypeListSerializer,
     PropertyTypeDetailSerializer,
     PropertyTypeCreateSerializer,

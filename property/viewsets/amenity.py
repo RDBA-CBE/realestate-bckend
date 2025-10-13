@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from common.paginator import Pagination
 from ..models import Amenity
-from property.filters import AmenityFilter
-from ..serializers import (
+from ..filters.amenity import AmenityFilter
+from ..serializers.amenity import (
     AmenityListSerializer,
     AmenityDetailSerializer,
     AmenityCreateSerializer,

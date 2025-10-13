@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Property, Project, ProjectPhase, ProjectDocument, PropertyType, Amenity
+from .models import (
+    Property, Project, ProjectPhase, ProjectDocument, PropertyType, Amenity,
+    PropertyImage, PropertyVideo, VirtualTour
+)
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
@@ -35,6 +38,32 @@ class PropertyTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Amenity)
 class AmenityAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'description']
-    list_filter = ['name']
+    list_display = ['name', 'category', 'is_active', 'created_at']
+    list_filter = ['category', 'is_active', 'created_at']
+    search_fields = ['name', 'description']
     readonly_fields = ['created_at', 'updated_at']
+    ordering = ['category', 'name']
+
+@admin.register(PropertyImage)
+class PropertyImageAdmin(admin.ModelAdmin):
+    list_display = ['property', 'alt_text', 'is_primary', 'order', 'created_at']
+    list_filter = ['is_primary', 'property']
+    search_fields = ['property__title', 'alt_text', 'caption']
+    readonly_fields = ['created_at', 'updated_at']
+    ordering = ['property', 'order']
+
+@admin.register(PropertyVideo)
+class PropertyVideoAdmin(admin.ModelAdmin):
+    list_display = ['property', 'title', 'duration', 'order', 'created_at']
+    list_filter = ['property']
+    search_fields = ['property__title', 'title', 'description']
+    readonly_fields = ['created_at', 'updated_at', 'file_size']
+    ordering = ['property', 'order']
+
+@admin.register(VirtualTour)
+class VirtualTourAdmin(admin.ModelAdmin):
+    list_display = ['property', 'tour_type', 'provider', 'is_active', 'order', 'created_at']
+    list_filter = ['tour_type', 'provider', 'is_active', 'property']
+    search_fields = ['property__title', 'description', 'provider']
+    readonly_fields = ['created_at', 'updated_at']
+    ordering = ['property', 'order']

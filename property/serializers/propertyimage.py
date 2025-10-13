@@ -1,13 +1,5 @@
 from rest_framework import serializers
-from property.models import PropertyImage, Property
-
-
-class PropertySimpleSerializer(serializers.ModelSerializer):
-    """Simple property serializer for image references"""
-    class Meta:
-        model = Property
-        fields = ['id', 'title', 'city']
-
+from ..models import PropertyImage
 
 class PropertyImageListSerializer(serializers.ModelSerializer):
     property_details = PropertySimpleSerializer(source='property', read_only=True)

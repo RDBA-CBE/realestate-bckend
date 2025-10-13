@@ -1,16 +1,16 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from common.paginator import Pagination
-from ..models import PropertyImage
-from ..serializers.propertyimage import (
-    PropertyImageCreateSerializer,
-    PropertyImageListSerializer,
-    PropertyImageDetailSerializer,
-    PropertyImageUpdateSerializer,
+from ..models import PropertyVideo
+from ..serializers.propertyvideo import (
+    PropertyVideoListSerializer,
+    PropertyVideoDetailSerializer,
+    PropertyVideoCreateSerializer,
+    PropertyVideoUpdateSerializer,
 )
 
-class PropertyImageViewSet(viewsets.ModelViewSet):
-    queryset = PropertyImage.objects.all()
+class PropertyVideoViewSet(viewsets.ModelViewSet):
+    queryset = PropertyVideo.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
     pagination_class = Pagination
     permission_classes = [IsAuthenticated]  # Add appropriate permissions
@@ -24,11 +24,11 @@ class PropertyImageViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.action == "list":
-            return PropertyImageListSerializer
+            return PropertyVideoListSerializer
         elif self.action == "retrieve":
-            return PropertyImageDetailSerializer
+            return PropertyVideoDetailSerializer
         elif self.action == "create":
-            return PropertyImageCreateSerializer
+            return PropertyVideoCreateSerializer
         elif self.action in ["update", "partial_update"]:
-            return PropertyImageUpdateSerializer
-        return PropertyImageDetailSerializer
+            return PropertyVideoUpdateSerializer
+        return PropertyVideoDetailSerializer
