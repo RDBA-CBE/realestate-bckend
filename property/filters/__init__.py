@@ -5,4 +5,5 @@ from .propertytype import PropertyTypeFilter
 from .propertyimage import PropertyImageFilter
 from .propertyvideo import PropertyVideoFilter
 from .virtualtour import VirtualTourFilter
+from .lead import LeadFilter
 

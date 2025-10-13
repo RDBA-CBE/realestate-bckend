@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import Property
+from ..models import Property, Amenity
 from .propertyimage import PropertyImageListSerializer
 from .propertyvideo import PropertyVideoListSerializer
 from .virtualtour import VirtualTourListSerializer
@@ -11,15 +11,21 @@ from authapp.serializers.customuser import CustomUserListSerializer
 class PropertyListSerializer(serializers.ModelSerializer):
     primary_image = serializers.SerializerMethodField()
     images_count = serializers.SerializerMethodField() 
+    images = PropertyImageListSerializer(many=True, read_only=True)
+    project = ProjectListSerializer(read_only=True)
     videos_count = serializers.SerializerMethodField()
     virtual_tours_count = serializers.SerializerMethodField()
-    
+    developer = CustomUserListSerializer(many=True, read_only=True)
+    property_type = PropertyTypeListSerializer(read_only=True)
+    agent = CustomUserListSerializer(read_only=True)
+
+
     class Meta:
         model = Property
         fields = [
             'id', 'title', 'city', 'state', 'status', 'price', 'listing_type',
-            'property_type', 'project', 'agent', 'developers', 'amenities',
-            'bedrooms', 'bathrooms', 'total_area', 'monthly_rent',
+            'property_type', 'project', 'agent', 'developer', 'amenities',
+            'bedrooms', 'bathrooms', 'total_area', 'monthly_rent', 'images',
             'primary_image', 'images_count', 'videos_count', 'virtual_tours_count'
         ]
     
@@ -48,7 +54,7 @@ class PropertyDetailSerializer(serializers.ModelSerializer):
     project = ProjectListSerializer(read_only=True)
     property_type = PropertyTypeListSerializer(read_only=True)
     agent = CustomUserListSerializer(read_only=True)
-    developers = CustomUserListSerializer(many=True, read_only=True)
+    developer = CustomUserListSerializer(read_only=True)
     amenities = AmenityListSerializer(many=True, read_only=True)
     
     class Meta:
@@ -74,7 +80,7 @@ class PropertyDetailSerializer(serializers.ModelSerializer):
     def get_primary_image(self, obj):
         primary_image = obj.images.filter(is_primary=True).first()
         if primary_image:
-            return PropertyImageSerializer(primary_image, context=self.context).data
+            return PropertyImageListSerializer(primary_image, context=self.context).data
         return None
 
 
@@ -132,5 +138,5 @@ class PropertyUpdateSerializer(serializers.ModelSerializer):
             'facing_direction', 'monthly_rent', 'rent_duration', 
             'lease_total_amount', 'lease_duration', 'furnishing', 'parking',
             'parking_spaces', 'available_from', 'is_featured', 'project',
-            'property_type', 'agent', 'developers', 'amenities'
+            'property_type', 'agent', 'developer', 'amenities'
         ]

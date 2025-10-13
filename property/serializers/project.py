@@ -51,12 +51,13 @@ class ProjectListSerializer(serializers.ModelSerializer):
     developer_email = serializers.CharField(source='developer.email', read_only=True)
     total_properties = serializers.SerializerMethodField()
     total_phases = serializers.SerializerMethodField()
+    property_count = serializers.IntegerField(source='properties.count', read_only=True)
     
     class Meta:
         model = Project
         fields = ['id', 'name', 'description', 'location', 'developer', 'developer_name', 
                  'developer_email', 'start_date', 'end_date', 'status', 'total_properties', 
-                 'total_phases', 'created_at']
+                 'total_phases', 'created_at','property_count']
     
     def get_total_properties(self, obj):
         return obj.properties.count()
@@ -66,7 +67,7 @@ class ProjectListSerializer(serializers.ModelSerializer):
 
 
 class ProjectDetailSerializer(serializers.ModelSerializer):
-    developer_details = DeveloperSerializer(source='developer', read_only=True)
+    developers_details = DeveloperSerializer(source='developers', many=True, read_only=True)
     phases = ProjectPhaseSerializer(many=True, read_only=True)
     documents = ProjectDocumentSerializer(many=True, read_only=True)
     
@@ -80,7 +81,7 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
         model = Project
         fields = '__all__'
         extra_fields = [
-            'developer_details', 'phases', 'documents',
+            'developers_details', 'phases', 'documents',
             'total_properties', 'available_properties', 'sold_properties', 'average_price'
         ]
     
@@ -102,7 +103,7 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
 class ProjectCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ['name', 'description', 'location', 'developer', 'start_date', 'end_date', 'status']
+        fields = ['name', 'description', 'location', 'developers', 'start_date', 'end_date', 'status']
     
     def validate(self, data):
         if data.get('start_date') and data.get('end_date'):

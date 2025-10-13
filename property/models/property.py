@@ -49,7 +49,13 @@ class Property(BaseModel):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
 
     # Developer/Agent Information
-    developers = models.ManyToManyField(CustomUser, related_name='properties')
+    developer = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='developed_properties'
+    )
     agent = models.ForeignKey(
         CustomUser,
         on_delete=models.SET_NULL,

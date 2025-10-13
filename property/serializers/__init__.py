@@ -45,6 +45,13 @@ from .projectphase import (
     ProjectPhaseUpdateSerializer
 )
 
+from .lead import (
+    LeadCreateSerializer,
+    LeadDetailSerializer,
+    LeadListSerializer,
+    LeadUpdateSerializer
+)
+
 __all__ = [ 
     'AmenityCreateSerializer',
     'AmenityDetailSerializer',
@@ -74,4 +81,8 @@ __all__ = [
     'ProjectPhaseDetailSerializer',
     'ProjectPhaseListSerializer',
     'ProjectPhaseUpdateSerializer',
+    'LeadCreateSerializer',
+    'LeadDetailSerializer',
+    'LeadListSerializer',
+    'LeadUpdateSerializer',
 ]

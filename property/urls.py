@@ -7,6 +7,7 @@ from .viewsets.amenity import AmenityViewSet
 from .viewsets.propertyimage import PropertyImageViewSet
 from .viewsets.propertyvideo import PropertyVideoViewSet
 from .viewsets.virtualtour import VirtualTourViewSet
+from .viewsets.lead import LeadViewSet
 
 router = DefaultRouter()
 router.register(r'properties', PropertyViewSet, basename="properties")
@@ -16,6 +17,7 @@ router.register(r'amenities', AmenityViewSet, basename="amenities")
 router.register(r'property-images', PropertyImageViewSet, basename="property-images")
 router.register(r'property-videos', PropertyVideoViewSet, basename="property-videos")
 router.register(r'virtual-tours', VirtualTourViewSet, basename="virtual-tours")
+router.register(r'leads', LeadViewSet, basename="leads")
 
 urlpatterns = [
     path('', include(router.urls)),

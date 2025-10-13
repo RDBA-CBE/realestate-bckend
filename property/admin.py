@@ -13,10 +13,14 @@ class PropertyAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['name', 'location', 'developer', 'status', 'start_date', 'end_date']
-    list_filter = ['status', 'developer']
+    list_display = ['name', 'location', 'get_developers', 'status', 'start_date', 'end_date']
+    list_filter = ['status', 'developers']
     search_fields = ['name', 'location']
     readonly_fields = ['created_at', 'updated_at']
+
+    def get_developers(self, obj):
+        return ", ".join([developer.get_full_name() or developer.username for developer in obj.developers.all()])
+    get_developers.short_description = 'Developers'
 
 @admin.register(ProjectPhase)
 class ProjectPhaseAdmin(admin.ModelAdmin):

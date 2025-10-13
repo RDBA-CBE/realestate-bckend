@@ -9,11 +9,7 @@ class Project(BaseModel):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     location = models.CharField(max_length=255)
-    developer = models.ForeignKey(
-        CustomUser,
-        on_delete=models.CASCADE,
-        related_name='projects'
-    )
+    developers = models.ManyToManyField(CustomUser, related_name='projects')
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=50, default='planning')
