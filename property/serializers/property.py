@@ -3,6 +3,10 @@ from ..models import Property
 from .propertyimage import PropertyImageListSerializer
 from .propertyvideo import PropertyVideoListSerializer
 from .virtualtour import VirtualTourListSerializer
+from .project import ProjectListSerializer
+from .propertytype import PropertyTypeListSerializer
+from .amenity import AmenityListSerializer
+from authapp.serializers.customuser import CustomUserListSerializer
 
 class PropertyListSerializer(serializers.ModelSerializer):
     primary_image = serializers.SerializerMethodField()
@@ -14,7 +18,8 @@ class PropertyListSerializer(serializers.ModelSerializer):
         model = Property
         fields = [
             'id', 'title', 'city', 'state', 'status', 'price', 'listing_type',
-            'property_type', 'bedrooms', 'bathrooms', 'total_area', 'monthly_rent',
+            'property_type', 'project', 'agent', 'developers', 'amenities',
+            'bedrooms', 'bathrooms', 'total_area', 'monthly_rent',
             'primary_image', 'images_count', 'videos_count', 'virtual_tours_count'
         ]
     
@@ -40,6 +45,11 @@ class PropertyDetailSerializer(serializers.ModelSerializer):
     images = PropertyImageListSerializer(many=True, read_only=True)
     videos = PropertyVideoListSerializer(many=True, read_only=True)
     virtual_tours = VirtualTourListSerializer(many=True, read_only=True)
+    project = ProjectListSerializer(read_only=True)
+    property_type = PropertyTypeListSerializer(read_only=True)
+    agent = CustomUserListSerializer(read_only=True)
+    developers = CustomUserListSerializer(many=True, read_only=True)
+    amenities = AmenityListSerializer(many=True, read_only=True)
     
     class Meta:
         model = Property
@@ -54,10 +64,11 @@ class PropertyUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
         fields = [
-            'description', 'status', 'price', 'address', 'city', 'state', 'country', 
+            'title', 'description', 'status', 'price', 'address', 'city', 'state', 'country', 
             'postal_code', 'bedrooms', 'bathrooms', 'total_area', 'carpet_area',
             'plot_area', 'land_type_zone', 'built_up_area', 'balconies', 
             'facing_direction', 'monthly_rent', 'rent_duration', 
             'lease_total_amount', 'lease_duration', 'furnishing', 'parking',
-            'parking_spaces', 'available_from', 'is_featured', 'developers'
+            'parking_spaces', 'available_from', 'is_featured', 'project',
+            'property_type', 'agent', 'developers', 'amenities'
         ]

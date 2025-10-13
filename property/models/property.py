@@ -14,7 +14,7 @@ class Property(BaseModel):
     LISTING_TYPE_CHOICES = [
         ('sale', 'For Sale'),
         ('rent', 'For Rent'),
-        ('lease', 'For Lease'),
+        ('lease', 'For Lease')
     ]
 
     STATUS_CHOICES = [

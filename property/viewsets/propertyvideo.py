@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from common.paginator import Pagination
 from ..models import PropertyVideo
+from ..filters.propertyvideo import PropertyVideoFilter
 from ..serializers.propertyvideo import (
     PropertyVideoListSerializer,
     PropertyVideoDetailSerializer,
@@ -12,6 +13,7 @@ from ..serializers.propertyvideo import (
 class PropertyVideoViewSet(viewsets.ModelViewSet):
     queryset = PropertyVideo.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
+    filterset_class = PropertyVideoFilter
     pagination_class = Pagination
     permission_classes = [IsAuthenticated]  # Add appropriate permissions
 

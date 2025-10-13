@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from common.paginator import Pagination
 from ..models import VirtualTour
+from ..filters.virtualtour import VirtualTourFilter
 from ..serializers.virtualtour import (
     VirtualTourListSerializer,
     VirtualTourDetailSerializer,
@@ -12,6 +13,7 @@ from ..serializers.virtualtour import (
 class VirtualTourViewSet(viewsets.ModelViewSet):
     queryset = VirtualTour.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
+    filterset_class = VirtualTourFilter
     pagination_class = Pagination
     permission_classes = [IsAuthenticated]  # Add appropriate permissions
 

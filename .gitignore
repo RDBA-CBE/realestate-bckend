@@ -51,7 +51,13 @@ htmlcov/
 *.mo
 *.xml
 db.sqlite3
+
+# Media files (user uploads)
 media/
+property_images/
+property_videos/
+property_video_thumbnails/
+virtual_tour_thumbnails/
 
 # Environment variables
 .env
