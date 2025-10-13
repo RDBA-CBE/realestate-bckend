@@ -54,13 +54,75 @@ class PropertyDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
         fields = '__all__'
+        extra_fields = [
+            'project_details', 'property_type_details', 'owner_details', 'agent_details',
+            'images', 'amenities_details', 'full_address', 'is_available', 
+            'average_rating', 'total_reviews', 'total_images', 'primary_image'
+        ]
+    
+    def get_fields(self):
+        fields = super().get_fields()
+        # Add extra fields to the serializer
+        for field in self.Meta.extra_fields:
+            if field not in fields and hasattr(self, f'get_{field}'):
+                fields[field] = serializers.SerializerMethodField()
+        return fields
+    
+    def get_total_images(self, obj):
+        return obj.images.count()
+    
+    def get_primary_image(self, obj):
+        primary_image = obj.images.filter(is_primary=True).first()
+        if primary_image:
+            return PropertyImageSerializer(primary_image, context=self.context).data
+        return None
+
 
 class PropertyCreateSerializer(serializers.ModelSerializer):
+    amenities = serializers.PrimaryKeyRelatedField(
+        queryset=Amenity.objects.all(),
+        many=True,
+        required=False
+    )
+    
     class Meta:
         model = Property
         fields = '__all__'
+        read_only_fields = ['slug', 'price_per_sqft', 'views_count', 'created_at', 'updated_at']
+    
+    def validate(self, data):
+        # Custom validation
+        if data.get('built_year') and data['built_year'] > 2030:
+            raise serializers.ValidationError("Built year cannot be in the future beyond 2030")
+        
+        if data.get('bedrooms', 0) < 0:
+            raise serializers.ValidationError("Bedrooms cannot be negative")
+        
+        if data.get('bathrooms', 0) < 0:
+            raise serializers.ValidationError("Bathrooms cannot be negative")
+        
+        if data.get('total_area') and data['total_area'] <= 0:
+            raise serializers.ValidationError("Total area must be greater than 0")
+        
+        return data
+    
+    def create(self, validated_data):
+        amenities = validated_data.pop('amenities', [])
+        property_instance = Property.objects.create(**validated_data)
+        
+        if amenities:
+            property_instance.amenities.set(amenities)
+        
+        return property_instance
+
 
 class PropertyUpdateSerializer(serializers.ModelSerializer):
+    amenities = serializers.PrimaryKeyRelatedField(
+        queryset=Amenity.objects.all(),
+        many=True,
+        required=False
+    )
+    
     class Meta:
         model = Property
         fields = [
