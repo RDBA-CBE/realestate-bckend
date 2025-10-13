@@ -14,5 +14,5 @@ class PropertyFilter(django_filters.FilterSet):
         fields = [
             'city', 'state', 'status', 'property_type', 'project', 'listing_type',
             'bedrooms', 'bathrooms', 'furnishing', 'parking', 'facing_direction',
-            'land_type_zone', 'is_featured', 'is_verified'
+            'land_type_zone', 'is_featured', 'is_verified','created_by'
         ]

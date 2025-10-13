@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from common.viewset import BaseViewSet
 from common.paginator import Pagination
 from ..models import PropertyType
 from ..filters.propertytype import PropertyTypeFilter
@@ -9,7 +10,7 @@ from ..serializers.propertytype import (
     PropertyTypeUpdateSerializer,
 )
 
-class PropertyTypeViewSet(viewsets.ModelViewSet):
+class PropertyTypeViewSet(BaseViewSet):
     queryset = PropertyType.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
     filterset_class = PropertyTypeFilter

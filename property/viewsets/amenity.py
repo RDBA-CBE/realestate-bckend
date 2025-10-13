@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from common.viewset import BaseViewSet
 from common.paginator import Pagination
 from ..models import Amenity
 from ..filters.amenity import AmenityFilter
@@ -9,7 +10,7 @@ from ..serializers.amenity import (
     AmenityUpdateSerializer
 )
 
-class AmenityViewSet(viewsets.ModelViewSet):
+class AmenityViewSet(BaseViewSet):
     queryset = Amenity.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
     filterset_class = AmenityFilter

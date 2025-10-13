@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from common.viewset import BaseViewSet
 from common.paginator import Pagination
 from ..models import Project
 from ..filters.project import ProjectFilter
@@ -8,7 +9,7 @@ from ..serializers.project import (
     ProjectCreateSerializer,
     ProjectUpdateSerializer
 )
-class ProjectViewSet(viewsets.ModelViewSet):
+class ProjectViewSet(BaseViewSet):
     queryset = Project.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
     filterset_class = ProjectFilter

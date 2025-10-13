@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     Property, Project, ProjectPhase, ProjectDocument, PropertyType, Amenity,
-    PropertyImage, PropertyVideo, VirtualTour
+    PropertyImage, PropertyVideo, VirtualTour, Lead
 )
 
 @admin.register(Property)
@@ -71,3 +71,6 @@ class VirtualTourAdmin(admin.ModelAdmin):
     search_fields = ['property__title', 'description', 'provider']
     readonly_fields = ['created_at', 'updated_at']
     ordering = ['property', 'order']
+
+
+admin.site.register(Lead)

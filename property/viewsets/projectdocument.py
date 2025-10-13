@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from common.viewset import BaseViewSet
 from common.paginator import Pagination
 from property.models import ProjectDocument
 from property.serializers import (
@@ -8,7 +9,7 @@ from property.serializers import (
     ProjectDocumentUpdateSerializer,
 )
 
-class ProjectDocumentViewSet(viewsets.ModelViewSet):
+class ProjectDocumentViewSet(BaseViewSet):
     queryset = ProjectDocument.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
     pagination_class = Pagination

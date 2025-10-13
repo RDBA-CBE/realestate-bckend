@@ -196,8 +196,12 @@ class Property(BaseModel):
     # Statistics
     views_count = models.PositiveIntegerField(default=0)
 
+    # Meta Information
+    highlightes = models.TextField(
+        blank=True,
+        help_text="Comma-separated highlighted features"
+    )
 
-    
 
     class Meta:
         verbose_name = 'Property'

@@ -26,9 +26,5 @@ router.register(r'register', RegistrationViewSet, basename="register")
 
 urlpatterns = [
     path('', include(router.urls)),
-]
-
-
-urlpatterns = [
-    path('', include(router.urls)),
+    path('', include('property.urls')),
 ]

@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from common.viewset import BaseViewSet
 from rest_framework.permissions import IsAuthenticated
 from common.paginator import Pagination
 from ..models import VirtualTour
@@ -10,7 +11,7 @@ from ..serializers.virtualtour import (
     VirtualTourUpdateSerializer,
 )
 
-class VirtualTourViewSet(viewsets.ModelViewSet):
+class VirtualTourViewSet(BaseViewSet):
     queryset = VirtualTour.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
     filterset_class = VirtualTourFilter

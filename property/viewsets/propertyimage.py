@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from common.viewset import BaseViewSet
 from rest_framework.permissions import IsAuthenticated
 from common.paginator import Pagination
 from ..models import PropertyImage
@@ -10,7 +11,7 @@ from ..serializers.propertyimage import (
     PropertyImageUpdateSerializer,
 )
 
-class PropertyImageViewSet(viewsets.ModelViewSet):
+class PropertyImageViewSet(BaseViewSet):
     queryset = PropertyImage.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
     filterset_class = PropertyImageFilter

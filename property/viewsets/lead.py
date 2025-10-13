@@ -1,8 +1,10 @@
 from rest_framework import viewsets
+from common.viewset import BaseViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils import timezone
+from django.db.models import Q
 import django_filters
 from common.paginator import Pagination
 from ..models import Lead
@@ -15,7 +17,7 @@ from ..serializers.lead import (
 )
 
 
-class LeadViewSet(viewsets.ModelViewSet):
+class LeadViewSet(BaseViewSet):
     queryset = Lead.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
     filterset_class = LeadFilter
@@ -38,8 +40,8 @@ class LeadViewSet(viewsets.ModelViewSet):
         # Filter by current user's assigned leads if not admin/staff
         if not self.request.user.is_staff:
             queryset = queryset.filter(
-                django_filters.Q(assigned_to=self.request.user) |
-                django_filters.Q(interested_property__agent=self.request.user)
+                Q(assigned_to=self.request.user) |
+                Q(interested_property__agent=self.request.user)
             )
 
         return queryset.order_by('-created_at')
