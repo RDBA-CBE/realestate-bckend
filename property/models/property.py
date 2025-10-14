@@ -88,6 +88,12 @@ class Property(BaseModel):
         blank=True,
         help_text="Carpet area in square feet"
     )
+    rera_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text="RERA Registration ID"
+    )
     built_year = models.PositiveIntegerField(
         null=True, 
         blank=True,
@@ -195,6 +201,17 @@ class Property(BaseModel):
     
     # Statistics
     views_count = models.PositiveIntegerField(default=0)
+
+    # Approval System
+    is_approved = models.BooleanField(default=False)
+    approved_by = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='approved_properties'
+    )
+    approved_at = models.DateTimeField(null=True, blank=True)
 
     # Meta Information
     highlightes = models.TextField(

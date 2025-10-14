@@ -23,6 +23,11 @@ class VirtualTourViewSet(BaseViewSet):
         property_id = self.request.query_params.get('property', None)
         if property_id:
             queryset = queryset.filter(property_id=property_id)
+        
+        # Only show virtual tours of approved properties to non-admin users
+        if not self.request.user.groups.filter(name='Admin').exists():
+            queryset = queryset.filter(property__is_approved=True)
+        
         # Only return active tours by default
         show_inactive = self.request.query_params.get('show_inactive', 'false').lower() == 'true'
         if not show_inactive:

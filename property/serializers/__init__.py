@@ -52,6 +52,13 @@ from .lead import (
     LeadUpdateSerializer
 )
 
+from .floorplan import (
+    FloorPlanCreateSerializer,
+    FloorPlanDetailSerializer,
+    FloorPlanListSerializer,
+    FloorPlanUpdateSerializer
+)
+
 __all__ = [ 
     'AmenityCreateSerializer',
     'AmenityDetailSerializer',
@@ -85,4 +92,8 @@ __all__ = [
     'LeadDetailSerializer',
     'LeadListSerializer',
     'LeadUpdateSerializer',
+    'FloorPlanCreateSerializer',
+    'FloorPlanDetailSerializer',
+    'FloorPlanListSerializer',
+    'FloorPlanUpdateSerializer',
 ]

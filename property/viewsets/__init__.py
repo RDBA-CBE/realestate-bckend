@@ -6,6 +6,7 @@ from .propertyimage import PropertyImageViewSet
 from .projectdocument import ProjectDocumentViewSet
 from .projectphase import ProjectPhaseViewSet
 from .lead import LeadViewSet
+from .floorplan import FloorPlanViewSet
 
 
 __all__ = [
@@ -17,4 +18,5 @@ __all__ = [
     'ProjectDocumentViewSet',
     'ProjectPhaseViewSet',
     'LeadViewSet',
+    'FloorPlanViewSet',
 ]

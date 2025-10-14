@@ -4,4 +4,4 @@ from ..models import Project
 class ProjectFilter(django_filters.FilterSet):
     class Meta:
         model = Project
-        fields = ['name', 'location', 'developers', 'status']
+        fields = ['name', 'location', 'developers', 'status', 'is_approved']

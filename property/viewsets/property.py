@@ -17,6 +17,13 @@ class PropertyViewSet(BaseViewSet):
     pagination_class = Pagination
     order_by = ['-id']  
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Only show approved properties to non-admin users
+        if not self.request.user.groups.filter(name='Admin').exists():
+            queryset = queryset.filter(is_approved=True)
+        return queryset
+
     def get_serializer_class(self):
         if self.action == "list":
             return PropertyListSerializer

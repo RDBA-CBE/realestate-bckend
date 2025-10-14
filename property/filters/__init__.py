@@ -6,4 +6,5 @@ from .propertyimage import PropertyImageFilter
 from .propertyvideo import PropertyVideoFilter
 from .virtualtour import VirtualTourFilter
 from .lead import LeadFilter
+from .floorplan import FloorPlanFilter
 

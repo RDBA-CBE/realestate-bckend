@@ -6,21 +6,61 @@ from .models import (
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
-    list_display = ['title', 'city', 'status', 'price', 'listing_type', 'created_at']
-    list_filter = ['status', 'listing_type', 'property_type', 'city', 'state']
+    list_display = ['title', 'city', 'status', 'price', 'listing_type', 'is_approved', 'created_at']
+    list_filter = ['status', 'listing_type', 'property_type', 'city', 'state', 'is_approved']
     search_fields = ['title', 'city', 'address']
-    readonly_fields = ['created_at', 'updated_at', 'price_per_sqft', 'views_count']
+    readonly_fields = ['created_at', 'updated_at', 'price_per_sqft', 'views_count', 'approved_at']
+    actions = ['approve_properties', 'reject_properties']
+    
+    def approve_properties(self, request, queryset):
+        from django.utils import timezone
+        updated = queryset.update(
+            is_approved=True,
+            approved_by=request.user,
+            approved_at=timezone.now()
+        )
+        self.message_user(request, f'{updated} properties have been approved.')
+    approve_properties.short_description = 'Approve selected properties'
+    
+    def reject_properties(self, request, queryset):
+        updated = queryset.update(
+            is_approved=False,
+            approved_by=None,
+            approved_at=None
+        )
+        self.message_user(request, f'{updated} properties have been rejected.')
+    reject_properties.short_description = 'Reject selected properties'
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['name', 'location', 'get_developers', 'status', 'start_date', 'end_date']
-    list_filter = ['status', 'developers']
+    list_display = ['name', 'location', 'get_developers', 'status', 'is_approved', 'start_date', 'end_date']
+    list_filter = ['status', 'developers', 'is_approved']
     search_fields = ['name', 'location']
-    readonly_fields = ['created_at', 'updated_at']
-
+    readonly_fields = ['created_at', 'updated_at', 'approved_at']
+    actions = ['approve_projects', 'reject_projects']
+    
     def get_developers(self, obj):
         return ", ".join([developer.get_full_name() or developer.username for developer in obj.developers.all()])
     get_developers.short_description = 'Developers'
+    
+    def approve_projects(self, request, queryset):
+        from django.utils import timezone
+        updated = queryset.update(
+            is_approved=True,
+            approved_by=request.user,
+            approved_at=timezone.now()
+        )
+        self.message_user(request, f'{updated} projects have been approved.')
+    approve_projects.short_description = 'Approve selected projects'
+    
+    def reject_projects(self, request, queryset):
+        updated = queryset.update(
+            is_approved=False,
+            approved_by=None,
+            approved_at=None
+        )
+        self.message_user(request, f'{updated} projects have been rejected.')
+    reject_projects.short_description = 'Reject selected projects'
 
 @admin.register(ProjectPhase)
 class ProjectPhaseAdmin(admin.ModelAdmin):
