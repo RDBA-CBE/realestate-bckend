@@ -51,6 +51,12 @@ class CustomUserFilter(filters.FilterSet):
         lookup_expr='lte'
     )
     
+    # Exclude specific user IDs
+    exclude_users = filters.CharFilter(
+        method='filter_exclude_users',
+        help_text="Exclude specific user IDs (comma-separated string '1,2,3' or list [1,2,3])"
+    )
+    
     class Meta:
         model = CustomUser
         fields = {
@@ -63,13 +69,39 @@ class CustomUserFilter(filters.FilterSet):
     def filter_by_user_type(self, queryset, name, value):
         """Custom filter method for user type based on group membership"""
         if value == 'admin':
-            return queryset.filter(groups__name='Admins')
+            return queryset.filter(groups__name='Admin')
         elif value == 'developer':
-            return queryset.filter(groups__name='Developers')
+            return queryset.filter(groups__name='Developer')
         elif value == 'agent':
-            return queryset.filter(groups__name='Agents')
+            return queryset.filter(groups__name='Agent')
         elif value == 'seller':
-            return queryset.filter(groups__name='Sellers')
+            return queryset.filter(groups__name='Seller')
         elif value == 'buyer':
-            return queryset.filter(groups__name='Buyers')
+            return queryset.filter(groups__name='Buyer')
         return queryset
+    
+    def filter_exclude_users(self, queryset, name, value):
+        """Filter method to exclude specific user IDs"""
+        if not value:
+            return queryset
+        
+        # Handle both comma-separated string and list formats
+        if isinstance(value, str):
+            # Split comma-separated string and convert to integers
+            try:
+                user_ids_to_exclude = [int(id.strip()) for id in value.split(',') if id.strip()]
+            except ValueError:
+                # If conversion fails, return original queryset
+                return queryset
+        elif isinstance(value, list):
+            # Handle list format directly
+            try:
+                user_ids_to_exclude = [int(id) for id in value if id is not None]
+            except (ValueError, TypeError):
+                # If conversion fails, return original queryset
+                return queryset
+        else:
+            # Unsupported format, return original queryset
+            return queryset
+        
+        return queryset.exclude(id__in=user_ids_to_exclude)

@@ -84,15 +84,15 @@ class CustomUser(AbstractUser):
     @property
     def user_type(self):
         """Get user type based on group membership"""
-        if self.groups.filter(name='Admins').exists():
+        if self.groups.filter(name='Admin').exists():
             return 'admin'
-        elif self.groups.filter(name='Developers').exists():
+        elif self.groups.filter(name='Developer').exists():
             return 'developer'
-        elif self.groups.filter(name='Agents').exists():
+        elif self.groups.filter(name='Agent').exists():
             return 'agent'
-        elif self.groups.filter(name='Sellers').exists():
+        elif self.groups.filter(name='Seller').exists():
             return 'seller'
-        elif self.groups.filter(name='Buyers').exists():
+        elif self.groups.filter(name='Buyer').exists():
             return 'buyer'
         return 'buyer'  # default
     

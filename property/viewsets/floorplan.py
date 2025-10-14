@@ -42,9 +42,13 @@ class FloorPlanViewSet(BaseViewSet):
         elif self.action == "retrieve":
             return FloorPlanDetailSerializer
         elif self.action == "create":
-            return FloorPlanBulkCreateSerializer
+            return FloorPlanCreateSerializer
         elif self.action in ["update", "partial_update"]:
             return FloorPlanUpdateSerializer
+        elif self.action == "bulk_create":
+            return FloorPlanBulkCreateSerializer
+        elif self.action == "bulk_update":
+            return FloorPlanBulkUpdateSerializer
         return FloorPlanDetailSerializer
 
     @action(detail=False, methods=['post'], url_path='bulk-create')

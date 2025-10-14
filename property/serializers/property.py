@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from common.serializers import BaseSerializer
-from ..models import Property, Amenity
+from ..models import Property, Amenity, FloorPlan
 from .propertyimage import PropertyImageListSerializer
 from .propertyvideo import PropertyVideoListSerializer
 from .virtualtour import VirtualTourListSerializer
@@ -8,6 +8,13 @@ from .project import ProjectListSerializer
 from .propertytype import PropertyTypeListSerializer
 from .amenity import AmenityListSerializer
 from authapp.serializers.customuser import CustomUserListSerializer
+
+
+class FloorPlanListSerializer(BaseSerializer):
+    class Meta:
+        model = FloorPlan
+        fields = ['id', 'category', 'square_feet', 'price', 'image']
+
 
 class PropertyListSerializer(BaseSerializer):
     primary_image = serializers.SerializerMethodField()
@@ -52,14 +59,16 @@ class PropertyDetailSerializer(BaseSerializer):
     agent = CustomUserListSerializer(read_only=True)
     developer = CustomUserListSerializer(read_only=True)
     amenities = AmenityListSerializer(many=True, read_only=True)
+    floor_plans = FloorPlanListSerializer(many=True, read_only=True)
     
     class Meta:
         model = Property
         fields = '__all__'
         extra_fields = [
-            'project_details', 'property_type_details', 'owner_details', 'agent_details',
-            'images', 'amenities_details', 'full_address', 'is_available', 
-            'average_rating', 'total_reviews', 'total_images', 'primary_image',
+            'project_details', 'property_type_details', 'owner_details', 
+            'agent_details','images', 'amenities_details', 'full_address', 
+            'is_available', 'average_rating', 'total_reviews', 'total_images', 
+            'primary_image','floor_plans'
         ]
     
     def get_fields(self):
@@ -78,6 +87,8 @@ class PropertyDetailSerializer(BaseSerializer):
         if primary_image:
             return PropertyImageListSerializer(primary_image, context=self.context).data
         return None
+    
+
 
 
 class PropertyCreateSerializer(BaseSerializer):
