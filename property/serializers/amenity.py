@@ -52,7 +52,7 @@ class AmenityDetailSerializer(BaseSerializer):
 class AmenityCreateSerializer(BaseSerializer):
     class Meta:
         model = Amenity
-        fields = ['name', 'description', 'category', 'icon', 'is_active']
+        fields = ['id', 'name', 'description', 'category', 'icon', 'is_active']
 
 class AmenityUpdateSerializer(BaseSerializer):
     class Meta:

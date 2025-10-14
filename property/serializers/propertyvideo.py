@@ -4,7 +4,7 @@ from ..models import PropertyVideo
 class PropertyVideoListSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyVideo
-        fields = ['id', 'title', 'thumbnail', 'duration', 'order', 'created_at']
+        fields = ['id', 'title', 'thumbnail','video','duration', 'order', 'created_at']
 
 class PropertyVideoDetailSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,7 +14,7 @@ class PropertyVideoDetailSerializer(serializers.ModelSerializer):
 class PropertyVideoCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyVideo
-        fields = ['property', 'video', 'title', 'description', 'thumbnail', 'duration', 'order']
+        fields = ['id', 'property', 'video', 'title', 'description', 'thumbnail', 'duration', 'order']
 
 class PropertyVideoUpdateSerializer(serializers.ModelSerializer):
     class Meta:

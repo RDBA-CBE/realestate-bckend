@@ -134,5 +134,5 @@ class PropertyUpdateSerializer(BaseSerializer):
             'facing_direction', 'monthly_rent', 'rent_duration', 
             'lease_total_amount', 'lease_duration', 'furnishing', 'parking',
             'parking_spaces', 'available_from', 'is_featured', 'project',
-            'property_type', 'agent', 'developers', 'amenities','highlightes'
+            'property_type', 'agent', 'developer', 'amenities','highlightes'
         ]
