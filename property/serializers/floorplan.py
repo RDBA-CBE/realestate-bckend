@@ -133,3 +133,58 @@ class FloorPlanUpdateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Only JPEG, PNG, WebP, and SVG images are allowed")
 
         return data
+
+
+class FloorPlanBulkCreateSerializer(serializers.Serializer):
+    """Serializer for bulk creating floor plans"""
+    floor_plans = FloorPlanCreateSerializer(many=True)
+
+    def create(self, validated_data):
+        floor_plans_data = validated_data['floor_plans']
+        floor_plans = []
+
+        for floor_plan_data in floor_plans_data:
+            floor_plan = FloorPlan.objects.create(**floor_plan_data)
+            floor_plans.append(floor_plan)
+
+        return floor_plans
+
+
+class FloorPlanBulkUpdateSerializer(serializers.Serializer):
+    """Serializer for bulk updating floor plans"""
+    floor_plans = serializers.ListField(
+        child=serializers.DictField(),
+        allow_empty=False
+    )
+
+    def validate_floor_plans(self, value):
+        """Validate that each floor plan has an id and valid update data"""
+        for item in value:
+            if 'id' not in item:
+                raise serializers.ValidationError("Each floor plan must have an 'id' field")
+            try:
+                floor_plan = FloorPlan.objects.get(id=item['id'])
+            except FloorPlan.DoesNotExist:
+                raise serializers.ValidationError(f"Floor plan with id {item['id']} does not exist")
+
+            # Validate update fields
+            update_serializer = FloorPlanUpdateSerializer(data=item)
+            if not update_serializer.is_valid():
+                raise serializers.ValidationError(f"Invalid data for floor plan {item['id']}: {update_serializer.errors}")
+
+        return value
+
+    def update(self, instance, validated_data):
+        floor_plans_data = validated_data['floor_plans']
+        updated_floor_plans = []
+
+        for floor_plan_data in floor_plans_data:
+            floor_plan_id = floor_plan_data.pop('id')
+            floor_plan = FloorPlan.objects.get(id=floor_plan_id)
+
+            update_serializer = FloorPlanUpdateSerializer(floor_plan, data=floor_plan_data, partial=True)
+            if update_serializer.is_valid():
+                updated_floor_plan = update_serializer.save()
+                updated_floor_plans.append(updated_floor_plan)
+
+        return updated_floor_plans
