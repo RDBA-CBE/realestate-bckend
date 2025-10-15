@@ -56,5 +56,7 @@ class LeadLogCreateSerializer(BaseSerializer):
         fields = ['lead', 'action', 'description', 'notes', 'old_value', 'new_value']
 
     def create(self, validated_data):
-        validated_data['performed_by'] = self.context['request'].user
+        # Set the performed_by from the request user, handle anonymous users
+        user = self.context['request'].user
+        validated_data['performed_by'] = user if user.is_authenticated else None
         return super().create(validated_data)

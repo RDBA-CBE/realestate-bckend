@@ -3,11 +3,9 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
-from ..utils import UserGroupManager
+
 
 User = get_user_model()
-
-
 
 class RegistrationSerializer(serializers.ModelSerializer):
     """Enhanced registration serializer with user type support"""
@@ -18,7 +16,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         ('agent', 'Real Estate Agent'),
         ('developer', 'Property Developer'),
     ]
-
     user_type = serializers.ChoiceField(
         choices=USER_TYPE_CHOICES,
         default='buyer',
@@ -68,7 +65,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        """Create user with appropriate group assignment"""
+        """Create user requiring admin approval"""
         # Remove fields not needed for user creation
         user_type = validated_data.pop('user_type')
         validated_data.pop('terms_accepted')
@@ -81,36 +78,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
         # Store user type for signal handler
         user._user_type = user_type
 
-        # Set initial account status based on user type
-        if UserGroupManager.get_instant_access(user_type):
-            user.account_status = 'verified'  # Will be set to approved after email verification
-        else:
-            user.account_status = 'unverified'
+        # Set all new users to pending review and inactive
+        user.account_status = 'pending_review'
+        user.is_active = False  # Disable login until admin approval
 
         user.save()
 
         return user
 
-    def to_representation(self, instance):
-        """Customize response data"""
-        data = super().to_representation(instance)
-
-        # Add user type and workflow information
-        user_type = instance.user_type
-        workflow = UserGroupManager.get_approval_workflow(user_type)
-
-        data.update({
-            'user_type': user_type,
-            'account_status': instance.account_status,
-            'requires_approval': UserGroupManager.requires_approval(user_type),
-            'next_steps': workflow['steps'],
-            'workflow_message': workflow.get('approval_message', '')
-        })
-
-        # Remove sensitive information
-        data.pop('password', None)
-
-        return data
 
 
 class UserTypeChangeSerializer(serializers.Serializer):

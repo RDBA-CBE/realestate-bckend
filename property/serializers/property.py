@@ -122,8 +122,9 @@ class PropertyCreateSerializer(BaseSerializer):
     def create(self, validated_data):
         amenities = validated_data.pop('amenities', [])
         property_instance = Property.objects.create(**validated_data)
-        
-        if not self.request.user.groups.filter(name='Admin').exists():
+        request = self.context.get('request')
+
+        if not request.user.groups.filter(name='Admin').exists():
             property_instance.is_approved = False
         else:
             property_instance.is_approved = True

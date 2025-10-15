@@ -32,12 +32,29 @@ class AuthViewSet(viewsets.ViewSet):
         password = serializer.validated_data["password"]
 
         user = authenticate(request, username=email, password=password)
-        if not user:
-            return Response(
-                {"error": "Invalid email or password"},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
 
+        # # ✅ Check if user account is still under verification
+        # if hasattr(user, "account_status") and user.account_status == "unverified":
+        #     return Response(
+        #         {"error": "Your account is under verification. Please wait for approval."},
+        #         status=status.HTTP_403_FORBIDDEN
+        #     )
+
+        #         # Check invalid credentials
+        # if not user:
+        #     return Response(
+        #         {"error": "Invalid email or password"},
+        #         status=status.HTTP_401_UNAUTHORIZED
+        #     )
+
+        # # Check if user account is inactive
+        # if not user.is_active:
+        #     return Response(
+        #         {"error": "Account is inactive. Please contact support."},
+        #         status=status.HTTP_403_FORBIDDEN
+        #     )
+
+        # ✅ Everything is good → issue tokens
         refresh = RefreshToken.for_user(user)
         groups = list(user.groups.values_list("id", "name"))
         groups_data = [{"id": g[0], "name": g[1]} for g in groups]

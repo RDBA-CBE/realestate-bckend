@@ -12,7 +12,6 @@ from authapp.serializers.register import (
     UserTypeChangeSerializer,
     AccountApprovalSerializer
 )
-from authapp.utils import UserGroupManager, user_type_required
 
 User = get_user_model()
 
@@ -41,21 +40,21 @@ class RegistrationViewSet(viewsets.ModelViewSet):
         description="Register a new user and automatically assign them to the appropriate group based on their selected user type."
     )
     def create(self, request, *args, **kwargs):
-        """Create a new user with automatic group assignment"""
+        """Create a new user requiring admin approval"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
         user = serializer.save()
+        
+        # Set all new users to pending review status
+        user.account_status = 'pending_review'
+        user.is_active = False  # Disable login until approved
+        user.save()
+        
         user_type = user.user_type
         
-        # Get workflow information
-        workflow = UserGroupManager.get_approval_workflow(user_type)
-        
-        # Prepare response message
-        if UserGroupManager.requires_approval(user_type):
-            message = f"Registration successful! Please complete your {user_type} profile and upload required documents for approval."
-        else:
-            message = "Registration successful! Please verify your email to start using the platform."
+        # Prepare response message for admin approval requirement
+        message = "Registration successful! Your account has been submitted for admin review. You will receive an email notification once your account is approved and you can login."
         
         response_data = {
             "success": "User created successfully",
@@ -64,200 +63,133 @@ class RegistrationViewSet(viewsets.ModelViewSet):
                 "email": user.email,
                 "user_type": user_type,
                 "account_status": user.account_status,
-                "requires_approval": UserGroupManager.requires_approval(user_type)
+                "requires_admin_approval": True
             },
             "message": message,
-            "next_steps": workflow['steps']
+            "next_steps": [
+                "Wait for admin review and approval",
+                "Check your email for approval notification",
+                "Complete your profile after approval (if required)"
+            ]
         }
+        
+        # Notify admins about new registration (optional)
+        # self.notify_admins_new_registration(user)
         
         return Response(response_data, status=status.HTTP_201_CREATED)
 
-
-class UserManagementViewSet(viewsets.GenericViewSet):
-    """ViewSet for user management operations (admin only)"""
-    
-    queryset = User.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_serializer_class(self):
-        if self.action == 'change_user_type':
-            return UserTypeChangeSerializer
-        elif self.action in ['approve_account', 'reject_account']:
-            return AccountApprovalSerializer
-        return RegistrationSerializer
-
     @extend_schema(
-        request=UserTypeChangeSerializer,
-        responses={200: {"success": "User type changed successfully"}},
-        summary="Change user type (Admin only)",
+        request={
+            "type": "object",
+            "properties": {
+                "email": {"type": "string", "format": "email"}
+            }
+        },
+        responses={200: {"type": "object"}},
+        summary="Check registration status by email",
     )
     @action(detail=False, methods=['post'])
-    @user_type_required(['admin'])
-    def change_user_type(self, request):
-        """Change a user's type and reassign groups"""
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+    def check_status(self, request):
+        """Check registration status by email (public endpoint)"""
+        email = request.data.get('email')
         
-        user_id = serializer.validated_data['user_id']
-        new_user_type = serializer.validated_data['new_user_type']
-        reason = serializer.validated_data.get('reason', '')
+        if not email:
+            return Response({
+                "error": "Email is required"
+            }, status=status.HTTP_400_BAD_REQUEST)
         
-        user = User.objects.get(id=user_id)
-        old_user_type = user.user_type
-        
-        # Reassign to new group
-        UserGroupManager.assign_user_to_group(user, new_user_type)
-        
-        # Reset account status if changing to a type that requires approval
-        if UserGroupManager.requires_approval(new_user_type):
-            user.account_status = 'pending_review'
-        
-        user.save()
-        
-        # Log the change (you might want to add an audit log model)
-        # AuditLog.objects.create(
-        #     action='user_type_change',
-        #     performed_by=request.user,
-        #     target_user=user,
-        #     details=f'Changed from {old_user_type} to {new_user_type}. Reason: {reason}'
-        # )
-        
-        return Response({
-            "success": "User type changed successfully",
-            "user": {
-                "id": user.id,
-                "email": user.email,
-                "old_user_type": old_user_type,
-                "new_user_type": new_user_type,
-                "account_status": user.account_status
-            }
-        })
-
-    @extend_schema(
-        request=AccountApprovalSerializer,
-        responses={200: {"success": "Account approved successfully"}},
-        summary="Approve user account (Admin only)",
-    )
-    @action(detail=False, methods=['post'])
-    @user_type_required(['admin'])
-    def approve_account(self, request):
-        """Approve a user account"""
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        
-        user_id = serializer.validated_data['user_id']
-        action = serializer.validated_data['action']
-        notes = serializer.validated_data.get('notes', '')
-        rejection_reason = serializer.validated_data.get('rejection_reason', '')
-        
-        user = User.objects.get(id=user_id)
-        
-        # Update user status
-        user.account_status = action
-        
-        if action == 'approved':
-            user.approved_by = request.user
-            user.approved_at = timezone.now()
-            user.rejection_reason = None
-        elif action == 'rejected':
-            user.rejection_reason = rejection_reason
-            user.approved_by = None
-            user.approved_at = None
-        
-        user.save()
-        
-        # Send notification email
-        self.send_approval_notification(user, action, notes, rejection_reason)
-        
-        return Response({
-            "success": f"Account {action} successfully",
-            "user": {
-                "id": user.id,
-                "email": user.email,
-                "user_type": user.user_type,
-                "account_status": user.account_status,
-                "approved_at": user.approved_at
-            }
-        })
-
-    @extend_schema(
-        responses={200: {"type": "array", "items": {"type": "object"}}},
-        summary="Get pending approvals (Admin only)",
-    )
-    @action(detail=False, methods=['get'])
-    @user_type_required(['admin'])
-    def pending_approvals(self, request):
-        """Get list of users pending approval"""
-        pending_users = User.objects.filter(
-            account_status='pending_review'
-        ).select_related('buyer_profile', 'seller_profile', 'agent_profile', 'developer_profile')
-        
-        users_data = []
-        for user in pending_users:
-            # Get profile completion info
-            profile = None
-            user_type = user.user_type
-            
-            if user_type == 'seller' and hasattr(user, 'seller_profile'):
-                profile = user.seller_profile
-            elif user_type == 'agent' and hasattr(user, 'agent_profile'):
-                profile = user.agent_profile
-            elif user_type == 'developer' and hasattr(user, 'developer_profile'):
-                profile = user.developer_profile
-            
-            users_data.append({
-                "id": user.id,
-                "email": user.email,
-                "name": user.get_full_name(),
-                "user_type": user_type,
-                "account_status": user.account_status,
-                "created_at": user.created_at,
-                "profile_completed": user.profile_completed,
-                "documents_uploaded": user.documents_uploaded,
-                "profile_completion_percentage": getattr(profile, 'profile_completion_percentage', 0)
-            })
-        
-        return Response(users_data)
-
-    def send_approval_notification(self, user, action, notes, rejection_reason):
-        """Send email notification for approval/rejection"""
         try:
-            if action == 'approved':
-                subject = 'Account Approved - Welcome to Real Estate Platform!'
-                template = 'emails/account_approved.html'
-            elif action == 'rejected':
-                subject = 'Account Application Update'
-                template = 'emails/account_rejected.html'
-            else:
-                return
+            user = User.objects.get(email=email)
             
-            context = {
-                'user': user,
-                'action': action,
-                'notes': notes,
-                'rejection_reason': rejection_reason,
-                'user_type': user.user_type
+            status_messages = {
+                'unverified': 'Account created but email not verified',
+                'verified': 'Email verified, awaiting admin approval',
+                'pending_review': 'Account under admin review',
+                'approved': 'Account approved - you can now login',
+                'rejected': 'Account application rejected',
+                'suspended': 'Account suspended'
             }
             
-            from django.template.loader import render_to_string
-            message = render_to_string(template, context)
+            return Response({
+                "email": user.email,
+                "account_status": user.account_status,
+                "status_message": status_messages.get(user.account_status, 'Unknown status'),
+                "can_login": user.is_active and user.account_status == 'approved',
+                "user_type": user.user_type,
+                "created_at": user.created_at,
+                "approved_at": user.approved_at,
+                "rejection_reason": user.rejection_reason if user.account_status == 'rejected' else None
+            })
             
-            send_mail(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [user.email],
-                html_message=message,
-                fail_silently=True,
-            )
-        except Exception as e:
-            print(f"Failed to send approval notification: {e}")
+        except User.DoesNotExist:
+            return Response({
+                "error": "No account found with this email address"
+            }, status=status.HTTP_404_NOT_FOUND)
 
+    def notify_admins_new_registration(self, user):
+        """Notify admin users about new registration"""
+        try:
+            # Get all admin users
+            admin_users = User.objects.filter(groups__name='Admin', is_active=True)
+            admin_emails = [admin.email for admin in admin_users if admin.email]
+            
+            if admin_emails:
+                subject = f'New User Registration - {user.user_type.title()}'
+                message = f"""
+                A new user has registered and is awaiting approval:
+                
+                Name: {user.get_full_name()}
+                Email: {user.email}
+                User Type: {user.user_type.title()}
+                Registration Date: {user.created_at.strftime('%Y-%m-%d %H:%M')}
+                
+                Please review and approve/reject this registration in the admin panel.
+                """
+                
+                send_mail(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    admin_emails,
+                    fail_silently=True,
+                )
+        except Exception as e:
+            print(f"Failed to send admin notification: {e}")
 
 class DashboardViewSet(viewsets.GenericViewSet):
     """ViewSet for user-type specific dashboard data"""
     
     permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(
+        responses={200: {"type": "object"}},
+        summary="Check user account status",
+    )
+    @action(detail=False, methods=['get'])
+    def account_status(self, request):
+        """Check current user's account status"""
+        user = request.user
+        
+        return Response({
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "name": user.get_full_name(),
+                "user_type": user.user_type,
+                "account_status": user.account_status,
+                "is_active": user.is_active,
+                "can_access_platform": user.account_status == 'approved' and user.is_active,
+                "profile_completed": user.profile_completed,
+                "approved_at": user.approved_at,
+                "created_at": user.created_at
+            },
+            "status_info": {
+                "pending_review": user.account_status == 'pending_review',
+                "approved": user.account_status == 'approved',
+                "rejected": user.account_status == 'rejected',
+                "rejection_reason": user.rejection_reason if user.account_status == 'rejected' else None
+            }
+        })
 
     @extend_schema(
         responses={200: {"type": "object"}},
@@ -268,15 +200,44 @@ class DashboardViewSet(viewsets.GenericViewSet):
         """Get dashboard data based on user type"""
         user = request.user
         
-        if not user.can_access_platform:
+        # Check if user can access the platform
+        if user.account_status == 'pending_review':
             return Response({
-                "error": "Account not approved or verified",
+                "message": "Your account is under review",
                 "account_status": user.account_status,
                 "user_type": user.user_type,
-                "next_steps": UserGroupManager.get_approval_workflow(user.user_type)['steps']
+                "next_steps": [
+                    "Wait for admin approval",
+                    "Check your email for updates",
+                    "Contact support if you have questions"
+                ]
             }, status=status.HTTP_403_FORBIDDEN)
         
-        # Get user-type specific dashboard data
+        if user.account_status == 'rejected':
+            return Response({
+                "error": "Your account application was rejected",
+                "account_status": user.account_status,
+                "rejection_reason": user.rejection_reason,
+                "next_steps": [
+                    "Contact support for more information",
+                    "Address the issues mentioned in rejection reason",
+                    "Reapply if permitted"
+                ]
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        if not user.is_active or user.account_status != 'approved':
+            return Response({
+                "error": "Account not yet approved for platform access",
+                "account_status": user.account_status,
+                "user_type": user.user_type,
+                "next_steps": [
+                    "Wait for admin approval",
+                    "Verify your email if not done",
+                    "Complete your profile if required"
+                ]
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        # Get user-type specific dashboard data for approved users
         dashboard_data = self.get_user_dashboard_data(user)
         
         return Response(dashboard_data)

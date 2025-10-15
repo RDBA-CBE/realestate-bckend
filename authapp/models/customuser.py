@@ -67,8 +67,8 @@ class CustomUser(AbstractUser):
     rejection_reason = models.TextField(blank=True, null=True)
     
     # Profile completion tracking
-    profile_completed = models.BooleanField(default=False)
-    documents_uploaded = models.BooleanField(default=False)
+    # profile_completed = models.BooleanField(default=False)
+    # documents_uploaded = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

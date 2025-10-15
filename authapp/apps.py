@@ -7,6 +7,3 @@ class AuthappConfig(AppConfig):
 
     def ready(self):
         import authapp.signals
-        from .signals import setup_groups
-        from django.db.models.signals import post_migrate
-        post_migrate.connect(setup_groups, sender=self)

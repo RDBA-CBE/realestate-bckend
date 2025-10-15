@@ -38,11 +38,12 @@ class LeadViewSet(BaseViewSet):
     def perform_create(self, serializer):
         """Create lead and log the creation"""
         lead = serializer.save()
-        # Log the creation
+        # Log the creation - handle anonymous users
+        performed_by = self.request.user if self.request.user.is_authenticated else None
         LeadLog.log_action(
             lead=lead,
             action='created',
-            performed_by=self.request.user,
+            performed_by=performed_by,
             description=f"Lead created for {lead.interested_property.title}"
         )
 
@@ -56,12 +57,15 @@ class LeadViewSet(BaseViewSet):
         # Save the updated lead
         lead = serializer.save()
         
+        # Handle anonymous users
+        performed_by = self.request.user if self.request.user.is_authenticated else None
+        
         # Log status change if it changed
         if old_status != lead.status:
             LeadLog.log_action(
                 lead=lead,
                 action='status_changed',
-                performed_by=self.request.user,
+                performed_by=performed_by,
                 old_value=old_status,
                 new_value=lead.status,
                 description=f"Status changed from '{old_status}' to '{lead.status}'"
@@ -72,7 +76,7 @@ class LeadViewSet(BaseViewSet):
             LeadLog.log_action(
                 lead=lead,
                 action='assigned',
-                performed_by=self.request.user,
+                performed_by=performed_by,
                 old_value=str(old_assigned_to) if old_assigned_to else 'Unassigned',
                 new_value=str(lead.assigned_to) if lead.assigned_to else 'Unassigned',
                 description=f"Lead assigned to {lead.assigned_to.get_full_name() if lead.assigned_to else 'Unassigned'}"
@@ -83,7 +87,7 @@ class LeadViewSet(BaseViewSet):
             LeadLog.log_action(
                 lead=lead,
                 action='updated',
-                performed_by=self.request.user,
+                performed_by=performed_by,
                 description="Lead information updated"
             )
 
@@ -99,11 +103,12 @@ class LeadViewSet(BaseViewSet):
         lead.save()
 
         # Log the contact action
+        performed_by = request.user if request.user.is_authenticated else None
         LeadLog.log_action(
             lead=lead,
             action='contacted',
-            performed_by=request.user,
-            description=f"Lead contacted by {request.user.get_full_name()}"
+            performed_by=performed_by,
+            description=f"Lead contacted by {request.user.get_full_name() if performed_by else 'Anonymous user'}"
         )
 
         serializer = self.get_serializer(lead)
@@ -121,13 +126,14 @@ class LeadViewSet(BaseViewSet):
         lead.save()
 
         # Log the assignment
+        performed_by = request.user if request.user.is_authenticated else None
         LeadLog.log_action(
             lead=lead,
             action='assigned',
-            performed_by=request.user,
+            performed_by=performed_by,
             old_value=str(old_assigned_to) if old_assigned_to else 'Unassigned',
-            new_value=str(request.user),
-            description=f"Lead assigned to {request.user.get_full_name()}"
+            new_value=str(request.user) if performed_by else 'Unknown',
+            description=f"Lead assigned to {request.user.get_full_name() if performed_by else 'Unknown user'}"
         )
 
         serializer = self.get_serializer(lead)
@@ -153,10 +159,11 @@ class LeadViewSet(BaseViewSet):
         lead.save()
 
         # Log the status change
+        performed_by = request.user if request.user.is_authenticated else None
         LeadLog.log_action(
             lead=lead,
             action='status_changed',
-            performed_by=request.user,
+            performed_by=performed_by,
             old_value=old_status,
             new_value=new_status,
             description=f"Status changed from '{old_status}' to '{new_status}'"
@@ -175,11 +182,12 @@ class LeadViewSet(BaseViewSet):
             return Response({'error': 'Note is required'}, status=400)
 
         # Log the note addition
+        performed_by = request.user if request.user.is_authenticated else None
         LeadLog.log_action(
             lead=lead,
             action='note_added',
-            performed_by=request.user,
-            description=f"Note added by {request.user.get_full_name()}",
+            performed_by=performed_by,
+            description=f"Note added by {request.user.get_full_name() if performed_by else 'Anonymous user'}",
             notes=note
         )
 
@@ -198,7 +206,7 @@ class LeadViewSet(BaseViewSet):
                 'id': log.id,
                 'action': log.action,
                 'action_display': log.get_action_display(),
-                'performed_by': log.performed_by.get_full_name() if log.performed_by else 'System',
+                'performed_by': log.performed_by.get_full_name() if log.performed_by else 'Anonymous User',
                 'old_value': log.old_value,
                 'new_value': log.new_value,
                 'description': log.description,

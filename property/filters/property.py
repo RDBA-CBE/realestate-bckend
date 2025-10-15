@@ -23,7 +23,7 @@ class PropertyFilter(django_filters.FilterSet):
     class Meta:
         model = Property
         fields = [
-            'city', 'state', 'status', 'property_type', 'project', 'listing_type',
-            'bedrooms', 'bathrooms', 'furnishing', 'parking', 'facing_direction',
+            'city', 'state', 'status', 'property_type', 'project', 'listing_type','agent', 
+            'bedrooms', 'bathrooms', 'furnishing', 'parking', 'facing_direction','developer',
             'land_type_zone', 'is_featured', 'is_verified', 'is_approved', 'created_by', 'sort_by'
         ]
