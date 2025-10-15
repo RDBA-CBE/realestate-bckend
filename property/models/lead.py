@@ -134,6 +134,7 @@ class Lead(BaseModel):
         verbose_name = 'Lead'
         verbose_name_plural = 'Leads'
         ordering = ['-created_at']
+        unique_together = ('email', 'interested_property')
         indexes = [
             models.Index(fields=['status', 'priority']),
             models.Index(fields=['interested_property', 'status']),

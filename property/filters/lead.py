@@ -24,10 +24,7 @@ class LeadFilter(django_filters.FilterSet):
 
     class Meta:
         model = Lead
-        fields = [
-            'interested_property', 'status', 'priority', 'lead_source', 'assigned_to',
-            'newsletter_subscribed', 'sms_marketing'
-        ]
+        fields = "__all__"
 
     def search_filter(self, queryset, name, value):
         """Search across multiple fields"""

@@ -59,6 +59,13 @@ from .floorplan import (
     FloorPlanUpdateSerializer
 )
 
+from .propertywishlist import (
+    PropertyWishlistListSerializer,
+    PropertyWishlistDetailSerializer,
+    PropertyWishlistCreateSerializer,
+    PropertyWishlistUpdateSerializer
+)
+
 __all__ = [ 
     'AmenityCreateSerializer',
     'AmenityDetailSerializer',

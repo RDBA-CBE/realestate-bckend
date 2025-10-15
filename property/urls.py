@@ -8,7 +8,13 @@ from .viewsets.propertyimage import PropertyImageViewSet
 from .viewsets.propertyvideo import PropertyVideoViewSet
 from .viewsets.virtualtour import VirtualTourViewSet
 from .viewsets.lead import LeadViewSet
+from .viewsets.leadlog import LeadLogViewSet
 from .viewsets.floorplan import FloorPlanViewSet
+from .viewsets.propertywishlist import (
+    PropertyFavoriteViewSet,
+    PropertyWishlistViewSet,
+    PropertyWishlistItemViewSet
+)
 
 router = DefaultRouter()
 router.register(r'properties', PropertyViewSet, basename="properties")
@@ -19,7 +25,11 @@ router.register(r'property-images', PropertyImageViewSet, basename="property-ima
 router.register(r'property-videos', PropertyVideoViewSet, basename="property-videos")
 router.register(r'virtual-tours', VirtualTourViewSet, basename="virtual-tours")
 router.register(r'leads', LeadViewSet, basename="leads")
+router.register(r'lead-logs', LeadLogViewSet, basename="lead-logs")
 router.register(r'floor-plans', FloorPlanViewSet, basename="floor-plans")
+router.register(r'favorites', PropertyFavoriteViewSet, basename="property-favorites")
+router.register(r'wishlists', PropertyWishlistViewSet, basename="property-wishlists")
+router.register(r'wishlist-items', PropertyWishlistItemViewSet, basename="property-wishlist-items")
 
 urlpatterns = [
     path('', include(router.urls)),

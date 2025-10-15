@@ -123,6 +123,12 @@ class PropertyCreateSerializer(BaseSerializer):
         amenities = validated_data.pop('amenities', [])
         property_instance = Property.objects.create(**validated_data)
         
+        if not self.request.user.groups.filter(name='Admin').exists():
+            property_instance.is_approved = False
+        else:
+            property_instance.is_approved = True
+        property_instance.save()
+
         if amenities:
             property_instance.amenities.set(amenities)
         
@@ -142,8 +148,9 @@ class PropertyUpdateSerializer(BaseSerializer):
             'title', 'description', 'status', 'price', 'address', 'city', 'state', 'country', 
             'postal_code', 'bedrooms', 'bathrooms', 'total_area', 'carpet_area',
             'plot_area', 'land_type_zone', 'built_up_area', 'balconies', 
-            'facing_direction', 'monthly_rent', 'rent_duration', 
+            'facing_direction', 'monthly_rent', 'rent_duration', 'listing_type',
             'lease_total_amount', 'lease_duration', 'furnishing', 'parking',
             'parking_spaces', 'available_from', 'is_featured', 'project',
-            'property_type', 'agent', 'developer', 'amenities','highlightes', 'rera_id'
+            'property_type', 'agent', 'developer', 'amenities','highlightes', 
+            'rera_id','is_approved'
         ]

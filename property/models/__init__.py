@@ -6,6 +6,7 @@ from .propertyimage import PropertyImage
 from .propertyvideo import PropertyVideo
 from .virtualtour import VirtualTour
 from .lead import Lead
+from .leadlog import LeadLog
 from .floorplan import FloorPlan
 from .propertyfeature import PropertyFeature, PropertyFeatureMapping, NeighborhoodInfo
 from .propertyinquiry import PropertyInquiry, PropertyViewing
@@ -30,6 +31,7 @@ __all__ = [
     'PropertyVideo',
     'VirtualTour',
     'Lead',
+    'LeadLog',
     'FloorPlan',
     'PropertyFeature',
     'PropertyFeatureMapping',

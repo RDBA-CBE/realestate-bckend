@@ -111,11 +111,18 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Start date cannot be after end date")
         return data
 
+    def create(self, validated_data):
+        if not self.request.user.groups.filter(name='Admin').exists():
+            validated_data['is_approved'] = False
+        else:
+            validated_data['is_approved'] = True
+        return super().create(validated_data)
+
 
 class ProjectUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ['name', 'description', 'location', 'start_date', 'end_date', 'status']
+        fields = ['name', 'description', 'location', 'start_date', 'end_date', 'status','is_approved']
     
     def validate(self, data):
         if data.get('start_date') and data.get('end_date'):

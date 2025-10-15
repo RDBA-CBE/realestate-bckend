@@ -22,11 +22,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if user.groups.filter(name="Admin").exists():
             return CustomUser.objects.all()
-        return (
-                CustomUser.objects
-                .exclude(groups__name="Admin")
-                .exclude(id=user.id)
-            )
+
+        return (CustomUser.objects.exclude(groups__name="Admin"))
 
     def get_serializer_class(self):
         if self.action == "list":
