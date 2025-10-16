@@ -37,9 +37,14 @@ class LeadViewSet(BaseViewSet):
 
     def perform_create(self, serializer):
         """Create lead and log the creation"""
-        lead = serializer.save()
-        # Log the creation - handle anonymous users
+        # Call parent create to save the instance
+        super().perform_create(serializer)
+        lead = serializer.instance  # instance is now available
+
+        # Determine who performed the action
         performed_by = self.request.user if self.request.user.is_authenticated else None
+
+        # Log creation
         LeadLog.log_action(
             lead=lead,
             action='created',
@@ -49,19 +54,50 @@ class LeadViewSet(BaseViewSet):
 
     def perform_update(self, serializer):
         """Update lead and log the changes"""
-        # Get old values before update
+        # Capture old values before update
         old_lead = Lead.objects.get(pk=serializer.instance.pk)
         old_status = old_lead.status
         old_assigned_to = old_lead.assigned_to
         
-        # Save the updated lead
-        lead = serializer.save()
-        
-        # Handle anonymous users
+        # Capture all important fields that can be updated
+        old_values = {
+            'first_name': old_lead.first_name,
+            'last_name': old_lead.last_name,
+            'email': old_lead.email,
+            'phone': old_lead.phone,
+            'alternate_phone': old_lead.alternate_phone,
+            'budget_min': str(old_lead.budget_min) if old_lead.budget_min else '',
+            'budget_max': str(old_lead.budget_max) if old_lead.budget_max else '',
+            'preferred_location': old_lead.preferred_location,
+            'requirements': old_lead.requirements,
+            'priority': old_lead.priority,
+            'lead_source': old_lead.lead_source,
+            'lead_source_details': old_lead.lead_source_details,
+            'next_follow_up': str(old_lead.next_follow_up) if old_lead.next_follow_up else '',
+            'company_name': old_lead.company_name,
+            'occupation': old_lead.occupation,
+            'address': old_lead.address,
+            'city': old_lead.city,
+            'state': old_lead.state,
+            'country': old_lead.country,
+            'postal_code': old_lead.postal_code,
+            'newsletter_subscribed': str(old_lead.newsletter_subscribed),
+            'sms_marketing': str(old_lead.sms_marketing),
+        }
+
+        # Perform the update using parent method
+        super().perform_update(serializer)
+        lead = serializer.instance
+
+        # Determine who performed the action
         performed_by = self.request.user if self.request.user.is_authenticated else None
+
+        # Track what changed
+        changes = []
         
-        # Log status change if it changed
+        # Check status change
         if old_status != lead.status:
+            changes.append(f"Status: '{old_status}' → '{lead.status}'")
             LeadLog.log_action(
                 lead=lead,
                 action='status_changed',
@@ -70,25 +106,103 @@ class LeadViewSet(BaseViewSet):
                 new_value=lead.status,
                 description=f"Status changed from '{old_status}' to '{lead.status}'"
             )
-        
-        # Log assignment change if it changed
+
+        # Check assignment change
         if old_assigned_to != lead.assigned_to:
+            old_assigned_name = str(old_assigned_to) if old_assigned_to else 'Unassigned'
+            new_assigned_name = str(lead.assigned_to) if lead.assigned_to else 'Unassigned'
+            changes.append(f"Assigned to: '{old_assigned_name}' → '{new_assigned_name}'")
             LeadLog.log_action(
                 lead=lead,
                 action='assigned',
                 performed_by=performed_by,
-                old_value=str(old_assigned_to) if old_assigned_to else 'Unassigned',
-                new_value=str(lead.assigned_to) if lead.assigned_to else 'Unassigned',
-                description=f"Lead assigned to {lead.assigned_to.get_full_name() if lead.assigned_to else 'Unassigned'}"
+                old_value=old_assigned_name,
+                new_value=new_assigned_name,
+                description=f"Lead assigned to {new_assigned_name}"
             )
-        
-        # Log general update if no specific changes were tracked
-        if old_status == lead.status and old_assigned_to == lead.assigned_to:
+
+        # Check other field changes
+        field_changes = []
+        if old_values['first_name'] != lead.first_name:
+            field_changes.append(f"First name: '{old_values['first_name']}' → '{lead.first_name}'")
+        if old_values['last_name'] != lead.last_name:
+            field_changes.append(f"Last name: '{old_values['last_name']}' → '{lead.last_name}'")
+        if old_values['email'] != lead.email:
+            field_changes.append(f"Email: '{old_values['email']}' → '{lead.email}'")
+        if old_values['phone'] != lead.phone:
+            field_changes.append(f"Phone: '{old_values['phone']}' → '{lead.phone}'")
+        if old_values['alternate_phone'] != lead.alternate_phone:
+            field_changes.append(f"Alternate phone: '{old_values['alternate_phone']}' → '{lead.alternate_phone}'")
+        if old_values['budget_min'] != (str(lead.budget_min) if lead.budget_min else ''):
+            field_changes.append(f"Min budget: '{old_values['budget_min']}' → '{lead.budget_min}'")
+        if old_values['budget_max'] != (str(lead.budget_max) if lead.budget_max else ''):
+            field_changes.append(f"Max budget: '{old_values['budget_max']}' → '{lead.budget_max}'")
+        if old_values['preferred_location'] != lead.preferred_location:
+            field_changes.append(f"Preferred location: '{old_values['preferred_location']}' → '{lead.preferred_location}'")
+        if old_values['requirements'] != lead.requirements:
+            field_changes.append(f"Requirements: '{old_values['requirements']}' → '{lead.requirements}'")
+        if old_values['priority'] != lead.priority:
+            field_changes.append(f"Priority: '{old_values['priority']}' → '{lead.priority}'")
+        if old_values['lead_source'] != lead.lead_source:
+            field_changes.append(f"Lead source: '{old_values['lead_source']}' → '{lead.lead_source}'")
+        if old_values['lead_source_details'] != lead.lead_source_details:
+            field_changes.append(f"Lead source details: '{old_values['lead_source_details']}' → '{lead.lead_source_details}'")
+        if old_values['next_follow_up'] != (str(lead.next_follow_up) if lead.next_follow_up else ''):
+            field_changes.append(f"Next follow up: '{old_values['next_follow_up']}' → '{lead.next_follow_up}'")
+        if old_values['company_name'] != lead.company_name:
+            field_changes.append(f"Company: '{old_values['company_name']}' → '{lead.company_name}'")
+        if old_values['occupation'] != lead.occupation:
+            field_changes.append(f"Occupation: '{old_values['occupation']}' → '{lead.occupation}'")
+        if old_values['address'] != lead.address:
+            field_changes.append(f"Address: '{old_values['address']}' → '{lead.address}'")
+        if old_values['city'] != lead.city:
+            field_changes.append(f"City: '{old_values['city']}' → '{lead.city}'")
+        if old_values['state'] != lead.state:
+            field_changes.append(f"State: '{old_values['state']}' → '{lead.state}'")
+        if old_values['country'] != lead.country:
+            field_changes.append(f"Country: '{old_values['country']}' → '{lead.country}'")
+        if old_values['postal_code'] != lead.postal_code:
+            field_changes.append(f"Postal code: '{old_values['postal_code']}' → '{lead.postal_code}'")
+        if old_values['newsletter_subscribed'] != str(lead.newsletter_subscribed):
+            field_changes.append(f"Newsletter: '{old_values['newsletter_subscribed']}' → '{lead.newsletter_subscribed}'")
+        if old_values['sms_marketing'] != str(lead.sms_marketing):
+            field_changes.append(f"SMS marketing: '{old_values['sms_marketing']}' → '{lead.sms_marketing}'")
+
+        # Log general update with all changes
+        if field_changes or (not changes):  # Log if there are field changes or if no status/assignment changes
+            all_changes = changes + field_changes
+            change_summary = "; ".join(all_changes) if all_changes else "Lead information updated"
+            
             LeadLog.log_action(
                 lead=lead,
                 action='updated',
                 performed_by=performed_by,
-                description="Lead information updated"
+                old_value="; ".join([f"{k}: {v}" for k, v in old_values.items() if v]),
+                new_value="; ".join([
+                    f"first_name: {lead.first_name}",
+                    f"last_name: {lead.last_name}", 
+                    f"email: {lead.email}",
+                    f"phone: {lead.phone}",
+                    f"alternate_phone: {lead.alternate_phone}",
+                    f"budget_min: {lead.budget_min}",
+                    f"budget_max: {lead.budget_max}",
+                    f"preferred_location: {lead.preferred_location}",
+                    f"requirements: {lead.requirements}",
+                    f"priority: {lead.priority}",
+                    f"lead_source: {lead.lead_source}",
+                    f"lead_source_details: {lead.lead_source_details}",
+                    f"next_follow_up: {lead.next_follow_up}",
+                    f"company_name: {lead.company_name}",
+                    f"occupation: {lead.occupation}",
+                    f"address: {lead.address}",
+                    f"city: {lead.city}",
+                    f"state: {lead.state}",
+                    f"country: {lead.country}",
+                    f"postal_code: {lead.postal_code}",
+                    f"newsletter_subscribed: {lead.newsletter_subscribed}",
+                    f"sms_marketing: {lead.sms_marketing}"
+                ]),
+                description=change_summary
             )
 
     @action(detail=True, methods=['post'])

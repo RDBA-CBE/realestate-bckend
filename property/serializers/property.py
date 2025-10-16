@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from common.serializers import BaseSerializer
 from ..models import Property, Amenity, FloorPlan
+from authapp.models.customuser import CustomUser
 from .propertyimage import PropertyImageListSerializer
 from .propertyvideo import PropertyVideoListSerializer
 from .virtualtour import VirtualTourListSerializer
@@ -8,7 +9,6 @@ from .project import ProjectListSerializer
 from .propertytype import PropertyTypeListSerializer
 from .amenity import AmenityListSerializer
 from authapp.serializers.customuser import CustomUserListSerializer
-
 
 class FloorPlanListSerializer(BaseSerializer):
     class Meta:
@@ -26,6 +26,7 @@ class PropertyListSerializer(BaseSerializer):
     developer = CustomUserListSerializer(read_only=True)
     property_type = PropertyTypeListSerializer(read_only=True)
     agent = CustomUserListSerializer(read_only=True)
+    created_by = CustomUserListSerializer(read_only=True)
 
 
     class Meta:

@@ -17,7 +17,7 @@ class FloorPlanListSerializer(serializers.ModelSerializer):
     class Meta:
         model = FloorPlan
         fields = ['id', 'property', 'property_details', 'category', 'square_feet',
-                 'price', 'image', 'image_url', 'file_size', 'created_at']
+                 'price', 'image', 'image_url', 'file_size', 'created_at', 'floor_no']
 
     def get_image_url(self, obj):
         if obj.image:
@@ -78,7 +78,7 @@ class FloorPlanDetailSerializer(serializers.ModelSerializer):
 class FloorPlanCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = FloorPlan
-        fields = ['property', 'category', 'square_feet', 'price', 'image']
+        fields = ['property', 'category', 'square_feet', 'price', 'image', 'floor_no']
 
     def validate(self, data):
         # Validate image file if provided
@@ -107,7 +107,7 @@ class FloorPlanCreateSerializer(serializers.ModelSerializer):
 class FloorPlanUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = FloorPlan
-        fields = ['category', 'square_feet', 'price', 'image']
+        fields = ['category', 'square_feet', 'price', 'image', 'floor_no']
 
     def validate_square_feet(self, value):
         if value <= 0:

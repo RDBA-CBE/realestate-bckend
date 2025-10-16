@@ -30,49 +30,22 @@ class LeadLogViewSet(BaseViewSet):
             return LeadLogCreateSerializer
         return LeadLogDetailSerializer
 
-    @action(detail=False, methods=['get'])
-    def by_lead(self, request):
-        """Get logs for a specific lead"""
-        lead_id = request.query_params.get('lead_id')
-        if not lead_id:
-            return Response(
-                {"error": "lead_id parameter is required"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        queryset = self.queryset.filter(lead_id=lead_id)
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
+    def list(self, request, *args, **kwargs):
+        """List lead logs with optional pagination"""
+        # Check pagination parameter
+        use_pagination = request.query_params.get('pagination', 'true').lower() == 'true'
+        
+        queryset = self.filter_queryset(self.get_queryset())
+        
+        if use_pagination:
+            # Use pagination
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+        
+        # No pagination - return all results
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['get'])
-    def recent(self, request):
-        """Get recent logs (last 50)"""
-        queryset = self.queryset[:50]
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    @action(detail=False, methods=['get'])
-    def stats(self, request):
-        """Get simple log statistics"""
-        from django.db.models import Count
-        from django.utils import timezone
-        from datetime import timedelta
-        
-        stats = {
-            'total_logs': self.queryset.count(),
-            'actions_breakdown': dict(
-                self.queryset.values('action')
-                .annotate(count=Count('action'))
-                .values_list('action', 'count')
-            ),
-            'recent_count': self.queryset.filter(
-                created_at__gte=timezone.now() - timedelta(days=7)
-            ).count()
-        }
-        
-        return Response(stats)
+    

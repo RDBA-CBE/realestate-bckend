@@ -33,28 +33,35 @@ class AuthViewSet(viewsets.ViewSet):
 
         user = authenticate(request, username=email, password=password)
 
-        # # ✅ Check if user account is still under verification
-        # if hasattr(user, "account_status") and user.account_status == "unverified":
-        #     return Response(
-        #         {"error": "Your account is under verification. Please wait for approval."},
-        #         status=status.HTTP_403_FORBIDDEN
-        #     )
+        # Check invalid credentials
+        if not user:
+            return Response(
+                {"error": "Invalid email or password"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
 
-        #         # Check invalid credentials
-        # if not user:
-        #     return Response(
-        #         {"error": "Invalid email or password"},
-        #         status=status.HTTP_401_UNAUTHORIZED
-        #     )
+        # Check if account is approved and active
+        if not user.is_active or getattr(user, 'account_status', None) != 'approved':
+            account_status = getattr(user, 'account_status', 'inactive')
+            
+            status_messages = {
+                'pending_review': 'Your account is pending admin approval',
+                'rejected': 'Your account application was rejected',
+                'unverified': 'Your email address is not verified',
+                'suspended': 'Your account has been suspended'
+            }
+            
+            error_message = status_messages.get(account_status, 'Account is inactive')
+            
+            return Response(
+                {
+                    "error": error_message,
+                    "account_status": account_status
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
 
-        # # Check if user account is inactive
-        # if not user.is_active:
-        #     return Response(
-        #         {"error": "Account is inactive. Please contact support."},
-        #         status=status.HTTP_403_FORBIDDEN
-        #     )
-
-        # ✅ Everything is good → issue tokens
+        # Generate tokens for approved users
         refresh = RefreshToken.for_user(user)
         groups = list(user.groups.values_list("id", "name"))
         groups_data = [{"id": g[0], "name": g[1]} for g in groups]

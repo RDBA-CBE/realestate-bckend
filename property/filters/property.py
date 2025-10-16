@@ -1,4 +1,5 @@
 import django_filters
+from django.db import models
 from ..models import Property
 
 class PropertyFilter(django_filters.FilterSet):
@@ -19,11 +20,29 @@ class PropertyFilter(django_filters.FilterSet):
             ("created_at", "created_at")
         )
     )
+    search = django_filters.CharFilter(
+        method='filter_search',
+        help_text="Search in title, description, address, city, state, and zip code"
+    )
     
     class Meta:
         model = Property
         fields = [
             'city', 'state', 'status', 'property_type', 'project', 'listing_type','agent', 
             'bedrooms', 'bathrooms', 'furnishing', 'parking', 'facing_direction','developer',
-            'land_type_zone', 'is_featured', 'is_verified', 'is_approved', 'created_by', 'sort_by'
+            'land_type_zone', 'is_featured', 'is_verified', 'is_approved', 'created_by', 'sort_by',
+            'search'
         ]
+
+    def filter_search(self, queryset, name, value):
+        """Search in title, description, address, city, state, and zip code"""
+        
+        return queryset.filter(
+            models.Q(title__icontains=value) |
+            models.Q(description__icontains=value) |
+            models.Q(address__icontains=value) |
+            models.Q(city__icontains=value) |
+            models.Q(state__icontains=value) |
+            models.Q(rera_id__icontains=value) |
+            models.Q(postal_code__icontains=value)
+        )
