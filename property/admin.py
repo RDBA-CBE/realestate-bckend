@@ -6,8 +6,8 @@ from .models import (
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
-    list_display = ['title', 'city', 'status', 'price', 'listing_type', 'is_approved', 'created_at']
-    list_filter = ['status', 'listing_type', 'property_type', 'city', 'state', 'is_approved']
+    list_display = ['title', 'city', 'status', 'price', 'listing_type', 'created_at']
+    list_filter = ['status', 'listing_type', 'property_type', 'city', 'state']
     search_fields = ['title', 'city', 'address']
     readonly_fields = ['created_at', 'updated_at', 'price_per_sqft', 'views_count', 'approved_at']
     actions = ['approve_properties', 'reject_properties']
@@ -15,8 +15,6 @@ class PropertyAdmin(admin.ModelAdmin):
     def approve_properties(self, request, queryset):
         from django.utils import timezone
         updated = queryset.update(
-            is_approved=True,
-            approved_by=request.user,
             approved_at=timezone.now()
         )
         self.message_user(request, f'{updated} properties have been approved.')
@@ -24,8 +22,6 @@ class PropertyAdmin(admin.ModelAdmin):
     
     def reject_properties(self, request, queryset):
         updated = queryset.update(
-            is_approved=False,
-            approved_by=None,
             approved_at=None
         )
         self.message_user(request, f'{updated} properties have been rejected.')
@@ -33,8 +29,8 @@ class PropertyAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['name', 'location', 'get_developers', 'status', 'is_approved', 'start_date', 'end_date']
-    list_filter = ['status', 'developers', 'is_approved']
+    list_display = ['name', 'location', 'get_developers', 'status', 'start_date', 'end_date']
+    list_filter = ['status', 'developers']
     search_fields = ['name', 'location']
     readonly_fields = ['created_at', 'updated_at', 'approved_at']
     actions = ['approve_projects', 'reject_projects']
@@ -46,8 +42,6 @@ class ProjectAdmin(admin.ModelAdmin):
     def approve_projects(self, request, queryset):
         from django.utils import timezone
         updated = queryset.update(
-            is_approved=True,
-            approved_by=request.user,
             approved_at=timezone.now()
         )
         self.message_user(request, f'{updated} projects have been approved.')
@@ -55,8 +49,6 @@ class ProjectAdmin(admin.ModelAdmin):
     
     def reject_projects(self, request, queryset):
         updated = queryset.update(
-            is_approved=False,
-            approved_by=None,
             approved_at=None
         )
         self.message_user(request, f'{updated} projects have been rejected.')

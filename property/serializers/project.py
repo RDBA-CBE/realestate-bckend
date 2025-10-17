@@ -57,7 +57,7 @@ class ProjectListSerializer(serializers.ModelSerializer):
         model = Project
         fields = ['id', 'name', 'description', 'location', 'developer', 'developer_name', 
                  'developer_email', 'start_date', 'end_date', 'status', 'total_properties', 
-                 'total_phases', 'created_at','property_count']
+                 'total_phases', 'created_at', 'created_by', 'property_count']
     
     def get_total_properties(self, obj):
         return obj.properties.count()
@@ -81,7 +81,7 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
         model = Project
         fields = '__all__'
         extra_fields = [
-            'developers_details', 'phases', 'documents',
+            'developers_details', 'phases', 'documents', 'created_by',
             'total_properties', 'available_properties', 'sold_properties', 'average_price'
         ]
     
@@ -103,7 +103,8 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
 class ProjectCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ['name', 'description', 'location', 'developers', 'start_date', 'end_date', 'status']
+        fields = ['name', 'description', 'location', 'developers', 'start_date', 
+                  'end_date', 'status']
     
     def validate(self, data):
         if data.get('start_date') and data.get('end_date'):
@@ -111,18 +112,19 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Start date cannot be after end date")
         return data
 
-    def create(self, validated_data):
-        if not self.request.user.groups.filter(name='Admin').exists():
-            validated_data['is_approved'] = False
-        else:
-            validated_data['is_approved'] = True
-        return super().create(validated_data)
+    # def create(self, validated_data):
+    #     request = self.context.get('request')
+    #     if request and not request.user.groups.filter(name='Admin').exists():
+    #         validated_data['is_approved'] = False
+    #     else:
+    #         validated_data['is_approved'] = True
+    #     return super().create(validated_data)
 
 
 class ProjectUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ['name', 'description', 'location', 'start_date', 'end_date', 'status','is_approved']
+        fields = ['name', 'description', 'location', 'start_date', 'end_date', 'status']
     
     def validate(self, data):
         if data.get('start_date') and data.get('end_date'):

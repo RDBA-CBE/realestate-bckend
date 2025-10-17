@@ -40,4 +40,4 @@ class CustomUserDetailSerializer(BaseSerializer):
 class CustomUserUpdateSerializer(BaseSerializer):
     class Meta:
         model = CustomUser
-        exclude = ['last_login', 'is_superuser', 'is_staff', 'is_active', 'date_joined']
+        exclude = ['last_login', 'is_superuser', 'is_staff', 'date_joined']

@@ -7,4 +7,5 @@ from .propertyvideo import PropertyVideoFilter
 from .virtualtour import VirtualTourFilter
 from .lead import LeadFilter
 from .floorplan import FloorPlanFilter
+from .wishlist import PropertyWishlistFilter
 

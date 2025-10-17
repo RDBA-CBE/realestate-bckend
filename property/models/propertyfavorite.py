@@ -1,5 +1,6 @@
 from django.db import models
 from common.models import BaseModel
+from django.conf import settings
 from .property import Property
 from authapp.models import CustomUser
 
@@ -30,61 +31,24 @@ class PropertyFavorite(BaseModel):
     def __str__(self):
         return f"{self.user.email} favorited {self.property.title}"
 
-
 class PropertyWishlist(BaseModel):
-    """Model for users to create named wishlists/collections of properties"""
-    user = models.ForeignKey(
-        CustomUser,
-        on_delete=models.CASCADE,
-        related_name='wishlists'
-    )
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100,null=True, blank=True)
     description = models.TextField(blank=True)
     is_public = models.BooleanField(default=False)
-    properties = models.ManyToManyField(
-        Property,
-        through='PropertyWishlistItem',
-        related_name='in_wishlists'
-    )
+    properties = models.ManyToManyField(Property)
 
     class Meta:
         verbose_name = 'Property Wishlist'
         verbose_name_plural = 'Property Wishlists'
-        unique_together = [['user', 'name']]
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.user.email}'s {self.name} wishlist"
+        return f"{self.created_by.get_full_name() or self.created_by.email}'s {self.name} wishlist"
 
     @property
     def property_count(self):
+        """Return the number of properties in this wishlist."""
         return self.properties.count()
-
-
-class PropertyWishlistItem(BaseModel):
-    """Through model for PropertyWishlist and Property relationship"""
-    wishlist = models.ForeignKey(
-        PropertyWishlist,
-        on_delete=models.CASCADE,
-        related_name='items'
-    )
-    property = models.ForeignKey(
-        Property,
-        on_delete=models.CASCADE,
-        related_name='wishlist_items'
-    )
-    notes = models.TextField(blank=True)
-    order = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = 'Wishlist Item'
-        verbose_name_plural = 'Wishlist Items'
-        unique_together = [['wishlist', 'property']]
-        ordering = ['order', 'created_at']
-
-    def __str__(self):
-        return f"{self.property.title} in {self.wishlist.name}"
-
 
 class PropertyAlert(BaseModel):
     """Model for users to set up alerts for properties matching their criteria"""
@@ -219,7 +183,6 @@ class PropertyAlert(BaseModel):
                     
         return True
 
-
 class PropertyComparison(BaseModel):
     """Model for users to compare multiple properties"""
     user = models.ForeignKey(
@@ -245,3 +208,5 @@ class PropertyComparison(BaseModel):
     @property
     def property_count(self):
         return self.properties.count()
+
+

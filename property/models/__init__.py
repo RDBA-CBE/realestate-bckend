@@ -13,7 +13,6 @@ from .propertyinquiry import PropertyInquiry, PropertyViewing
 from .propertyfavorite import (
     PropertyFavorite, 
     PropertyWishlist, 
-    PropertyWishlistItem, 
     PropertyAlert, 
     PropertyComparison
 )

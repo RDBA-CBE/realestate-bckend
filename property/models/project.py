@@ -9,20 +9,10 @@ class Project(BaseModel):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     location = models.CharField(max_length=255)
-    developers = models.ManyToManyField(CustomUser, related_name='projects')
+    developers = models.ManyToManyField(CustomUser, related_name='projects',null=True, blank=True)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=50, default='planning')
-    
-    # Approval System
-    is_approved = models.BooleanField(default=False)
-    approved_by = models.ForeignKey(
-        CustomUser,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='approved_projects'
-    )
     approved_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):

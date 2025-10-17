@@ -1,6 +1,9 @@
 from rest_framework import viewsets
 from common.viewset import BaseViewSet
 from common.paginator import Pagination
+from django.db.models import Max, Min
+from rest_framework.response import Response
+from rest_framework import status
 from ..models import Property
 from ..filters.property import PropertyFilter
 from ..serializers.property import (
@@ -34,3 +37,30 @@ class PropertyViewSet(BaseViewSet):
         elif self.action in ["update", "partial_update"]:
             return PropertyUpdateSerializer
         return PropertyDetailSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # Apply pagination
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(page or queryset, many=True)
+
+        # Get min & max price from full filtered queryset
+        price_stats = queryset.aggregate(
+            min_price=Min("price"),
+            max_price=Max("price")
+        )
+
+        # If paginated, wrap response in pagination format
+        if page is not None:
+            response = self.get_paginated_response(serializer.data)
+            response.data["min_price"] = price_stats["min_price"]
+            response.data["max_price"] = price_stats["max_price"]
+            return response
+
+        # Otherwise, return simple response
+        return Response({
+            "min_price": price_stats["min_price"],
+            "max_price": price_stats["max_price"],
+            "results": serializer.data
+        }, status=status.HTTP_200_OK)
