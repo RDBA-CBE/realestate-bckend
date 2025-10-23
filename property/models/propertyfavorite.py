@@ -32,18 +32,25 @@ class PropertyFavorite(BaseModel):
         return f"{self.user.email} favorited {self.property.title}"
 
 class PropertyWishlist(BaseModel):
-    name = models.CharField(max_length=100,null=True, blank=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(blank=True)
     is_public = models.BooleanField(default=False)
-    properties = models.ManyToManyField(Property)
+    properties = models.ManyToManyField(Property, related_name='wishlists', blank=True)
 
     class Meta:
         verbose_name = 'Property Wishlist'
         verbose_name_plural = 'Property Wishlists'
         ordering = ['-created_at']
+        # Ensure only one wishlist per user
+        constraints = [
+            models.UniqueConstraint(
+                fields=['created_by'], 
+                name='unique_wishlist_per_user'
+            )
+        ]
 
     def __str__(self):
-        return f"{self.created_by.get_full_name() or self.created_by.email}'s {self.name} wishlist"
+        return f"{self.created_by.get_full_name() or self.created_by.email}'s wishlist"
 
     @property
     def property_count(self):

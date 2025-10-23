@@ -20,7 +20,7 @@ class BuyerProfileViewSet(BaseViewSet):
         user = self.request.user
         if user.groups.filter(name="Admin").exists():
             return BuyerProfile.objects.all()
-        return BuyerProfile.objects.filter(created_by=user)
+        return BuyerProfile.objects.filter(user=user)
     
     def get_serializer_class(self):
         if self.action == "list":

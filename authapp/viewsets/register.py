@@ -1,6 +1,7 @@
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.contrib.auth.models import Group
 from drf_spectacular.utils import extend_schema
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -40,22 +41,31 @@ class RegistrationViewSet(viewsets.ModelViewSet):
         description="Register a new user and automatically assign them to the appropriate group based on their selected user type."
     )
     def create(self, request, *args, **kwargs):
-        """Create a new user requiring admin approval"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         user = serializer.save()
-        
-        # Set all new users to pending review status
+
+        # Set account approval fields
         user.account_status = 'pending_review'
-        user.is_active = False  # Disable login until approved
+        user.is_active = False  # Disable login until admin approves
         user.save()
-        
-        user_type = user.user_type
-        
-        # Prepare response message for admin approval requirement
-        message = "Registration successful! Your account has been submitted for admin review. You will receive an email notification once your account is approved and you can login."
-        
+
+        user_type = serializer.validated_data.get("user_type")
+
+        # 🔹 Assign Group based on user_type
+        if user_type:
+            group_name = user_type.capitalize()  # e.g., "buyer" → "Buyer"
+            group, created = Group.objects.get_or_create(name=group_name)
+            user.groups.add(group)
+
+        # 🔹 Prepare response
+        message = (
+            "Registration successful! "
+            "Your account has been submitted for admin review. "
+            "You’ll receive an email notification once approved."
+        )
+
         response_data = {
             "success": "User created successfully",
             "user": {
@@ -63,19 +73,17 @@ class RegistrationViewSet(viewsets.ModelViewSet):
                 "email": user.email,
                 "user_type": user_type,
                 "account_status": user.account_status,
-                "requires_admin_approval": True
+                "assigned_group": group_name if user_type else None,
+                "requires_admin_approval": True,
             },
             "message": message,
             "next_steps": [
                 "Wait for admin review and approval",
                 "Check your email for approval notification",
                 "Complete your profile after approval (if required)"
-            ]
+            ],
         }
-        
-        # Notify admins about new registration (optional)
-        # self.notify_admins_new_registration(user)
-        
+
         return Response(response_data, status=status.HTTP_201_CREATED)
 
     @extend_schema(

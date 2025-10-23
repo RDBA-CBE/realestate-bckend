@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from common.serializers import BaseSerializer
 from ..models import Property, Amenity, FloorPlan
+from ..models import PropertyWishlist
 from authapp.models.customuser import CustomUser
 from .propertyimage import PropertyImageListSerializer
 from .propertyvideo import PropertyVideoListSerializer
@@ -27,6 +28,7 @@ class PropertyListSerializer(BaseSerializer):
     property_type = PropertyTypeListSerializer(read_only=True)
     agent = CustomUserListSerializer(read_only=True)
     created_by = CustomUserListSerializer(read_only=True)
+    user_wishlists = serializers.SerializerMethodField()
 
 
     class Meta:
@@ -51,6 +53,24 @@ class PropertyListSerializer(BaseSerializer):
     def get_virtual_tours_count(self, obj):
         return obj.virtual_tours.filter(is_active=True).count()
 
+    def get_user_wishlists(self, obj):
+        """Return True if property is in any of the user's wishlists, False otherwise."""
+        request = self.context.get('request')
+        if not request or not request.user or not request.user.is_authenticated:
+            return False
+
+        user = request.user
+
+        # cache all wishlist property ids on the serializer to avoid repeated DB hits
+        if not hasattr(self, '_user_wishlist_property_ids'):
+            wishlists = PropertyWishlist.objects.filter(created_by=user).prefetch_related('properties')
+            all_prop_ids = set()
+            for wl in wishlists:
+                all_prop_ids.update(wl.properties.values_list('id', flat=True))
+            self._user_wishlist_property_ids = all_prop_ids
+
+        return obj.id in self._user_wishlist_property_ids
+
 class PropertyDetailSerializer(BaseSerializer):
     images = PropertyImageListSerializer(many=True, read_only=True)
     videos = PropertyVideoListSerializer(many=True, read_only=True)
@@ -61,6 +81,7 @@ class PropertyDetailSerializer(BaseSerializer):
     developer = CustomUserListSerializer(read_only=True)
     amenities = AmenityListSerializer(many=True, read_only=True)
     floor_plans = FloorPlanListSerializer(many=True, read_only=True)
+    user_wishlists = serializers.SerializerMethodField()
     
     class Meta:
         model = Property
@@ -69,7 +90,7 @@ class PropertyDetailSerializer(BaseSerializer):
             'project_details', 'property_type_details', 'owner_details', 
             'agent_details','images', 'amenities_details', 'full_address', 
             'is_available', 'average_rating', 'total_reviews', 'total_images', 
-            'primary_image','floor_plans'
+            'primary_image','floor_plans', 'user_wishlists'
         ]
     
     def get_fields(self):
@@ -89,6 +110,23 @@ class PropertyDetailSerializer(BaseSerializer):
             return PropertyImageListSerializer(primary_image, context=self.context).data
         return None
     
+    def get_user_wishlists(self, obj):
+        """Return True if property is in any of the user's wishlists, False otherwise."""
+        request = self.context.get('request')
+        if not request or not request.user or not request.user.is_authenticated:
+            return False
+
+        user = request.user
+
+        # cache all wishlist property ids on the serializer to avoid repeated DB hits
+        if not hasattr(self, '_user_wishlist_property_ids'):
+            wishlists = PropertyWishlist.objects.filter(created_by=user).prefetch_related('properties')
+            all_prop_ids = set()
+            for wl in wishlists:
+                all_prop_ids.update(wl.properties.values_list('id', flat=True))
+            self._user_wishlist_property_ids = all_prop_ids
+
+        return obj.id in self._user_wishlist_property_ids
 
 
 

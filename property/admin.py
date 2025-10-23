@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     Property, Project, ProjectPhase, ProjectDocument, PropertyType, Amenity,
-    PropertyImage, PropertyVideo, VirtualTour, Lead
+    PropertyImage, PropertyVideo, VirtualTour, Lead, PropertyWishlist
 )
 
 @admin.register(Property)
@@ -106,3 +106,4 @@ class VirtualTourAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Lead)
+admin.site.register(PropertyWishlist)

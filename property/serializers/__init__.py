@@ -63,7 +63,9 @@ from .propertywishlist import (
     PropertyWishlistListSerializer,
     PropertyWishlistDetailSerializer,
     PropertyWishlistCreateSerializer,
-    PropertyWishlistUpdateSerializer
+    PropertyWishlistUpdateSerializer,
+    AddPropertyToWishlistSerializer,
+    RemovePropertyFromWishlistSerializer
 )
 
 __all__ = [ 

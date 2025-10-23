@@ -37,6 +37,7 @@ class LeadViewSet(BaseViewSet):
 
     def perform_create(self, serializer):
         """Create lead and log the creation"""
+        
         # Call parent create to save the instance
         super().perform_create(serializer)
         lead = serializer.instance  # instance is now available

@@ -1,12 +1,12 @@
 from rest_framework import serializers
 from common.serializers import BaseSerializer
-from ..models import PropertyWishlist
+from ..models import PropertyWishlist, Property
 from .property import PropertyListSerializer
 
 
 
 class PropertyWishlistListSerializer(BaseSerializer):
-    """Serializer for listing user's wishlists"""
+    """Serializer for listing user's wishlist"""
     property_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -31,24 +31,45 @@ class PropertyWishlistDetailSerializer(BaseSerializer):
 
 
 class PropertyWishlistCreateSerializer(BaseSerializer):
-    """Serializer for creating wishlists"""
+    """Serializer for creating wishlist - user can only have one wishlist"""
 
     class Meta:
         model = PropertyWishlist
-        fields = '__all__'
+        fields = ['name', 'description', 'is_public']
+        
+    def validate(self, attrs):
+        """Ensure user doesn't already have a wishlist"""
+        user = self.context['request'].user
+        if PropertyWishlist.objects.filter(created_by=user).exists():
+            raise serializers.ValidationError("You already have a wishlist. Each user can only have one wishlist.")
+        return attrs
 
 
 class PropertyWishlistUpdateSerializer(BaseSerializer):
-    """Serializer for updating wishlists"""
+    """Serializer for updating wishlist"""
 
     class Meta:
         model = PropertyWishlist
-        fields = "__all__"
+        fields = ['name', 'description', 'is_public']
 
-    def validate_name(self, value):
-        """Ensure user doesn't have another wishlist with the same name (excluding current)"""
-        user = self.context['request'].user
-        wishlist_id = self.instance.id if self.instance else None
-        if PropertyWishlist.objects.filter(created_by=user, name=value).exclude(id=wishlist_id).exists():
-            raise serializers.ValidationError("You already have a wishlist with this name")
+
+class AddPropertyToWishlistSerializer(serializers.Serializer):
+    """Serializer for adding properties to wishlist"""
+    property_id = serializers.IntegerField(help_text="ID of the property to add")
+    
+    def validate_property_id(self, value):
+        """Ensure property exists"""
+        if not Property.objects.filter(id=value).exists():
+            raise serializers.ValidationError(f"Property with ID {value} does not exist")
+        return value
+
+
+class RemovePropertyFromWishlistSerializer(serializers.Serializer):
+    """Serializer for removing properties from wishlist"""
+    property_id = serializers.IntegerField(help_text="ID of the property to remove")
+    
+    def validate_property_id(self, value):
+        """Ensure property exists"""
+        if not Property.objects.filter(id=value).exists():
+            raise serializers.ValidationError(f"Property with ID {value} does not exist")
         return value

@@ -1,9 +1,10 @@
 from rest_framework import serializers
-from ..models import Lead, Property
+from ..models import Lead
+from common.serializers import BaseSerializer
 from .property import PropertyListSerializer
 from authapp.serializers.customuser import CustomUserListSerializer
 
-class LeadListSerializer(serializers.ModelSerializer):
+class LeadListSerializer(BaseSerializer):
     property_details = PropertyListSerializer(source='interested_property', read_only=True)
     assigned_to_details = CustomUserListSerializer(source='assigned_to', read_only=True)
     full_name = serializers.SerializerMethodField()
@@ -18,7 +19,7 @@ class LeadListSerializer(serializers.ModelSerializer):
             'assigned_to', 'assigned_to_details', 'next_follow_up',
             'days_since_last_contact', 'days_until_next_follow_up',
             'budget_min', 'budget_max', 'preferred_location', 'requirements',
-            'created_at', 'company_name', 'occupation', 'address', 'city', 'state', 'country', 'postal_code',
+            'created_at','created_by', 'company_name', 'occupation', 'address', 'city', 'state', 'country', 'postal_code',
             'newsletter_subscribed', 'sms_marketing'
         ]
 
@@ -31,7 +32,7 @@ class LeadListSerializer(serializers.ModelSerializer):
     def get_days_until_next_follow_up(self, obj):
         return obj.days_until_next_follow_up
 
-class LeadDetailSerializer(serializers.ModelSerializer):
+class LeadDetailSerializer(BaseSerializer):
     property_details = PropertyListSerializer(source='interested_property', read_only=True)
     assigned_to_details = CustomUserListSerializer(source='assigned_to', read_only=True)
     assigned_by_details = CustomUserListSerializer(source='assigned_by', read_only=True)
@@ -48,7 +49,7 @@ class LeadDetailSerializer(serializers.ModelSerializer):
             'next_follow_up', 'last_contacted', 'contact_count',
             'days_since_last_contact', 'days_until_next_follow_up',
             'budget_min', 'budget_max', 'preferred_location', 'requirements',
-            'created_at', 'company_name', 'occupation', 'address', 'city', 'state', 'country', 'postal_code',
+            'created_at', 'created_by', 'company_name', 'occupation', 'address', 'city', 'state', 'country', 'postal_code',
             'newsletter_subscribed', 'sms_marketing'
         ]
 
@@ -61,7 +62,7 @@ class LeadDetailSerializer(serializers.ModelSerializer):
     def get_days_until_next_follow_up(self, obj):
         return obj.days_until_next_follow_up
 
-class LeadCreateSerializer(serializers.ModelSerializer):
+class LeadCreateSerializer(BaseSerializer):
     class Meta:
         model = Lead
         fields = [
@@ -92,16 +93,20 @@ class LeadCreateSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+        # Handle assigned_by field
         if 'assigned_by' not in validated_data:
             request = self.context.get('request')
             if request and request.user.is_authenticated:
                 validated_data['assigned_by'] = request.user
+        
+        # Set assigned_at timestamp if assigned_to is provided
         if validated_data.get('assigned_to') and 'assigned_at' not in validated_data:
             from django.utils import timezone
             validated_data['assigned_at'] = timezone.now()
+        
         return super().create(validated_data)
 
-class LeadUpdateSerializer(serializers.ModelSerializer):
+class LeadUpdateSerializer(BaseSerializer):
     class Meta:
         model = Lead
         fields = [

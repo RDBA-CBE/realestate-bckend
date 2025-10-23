@@ -1,4 +1,5 @@
 from django_filters import rest_framework as filters
+from django.db.models import Q
 from django.contrib.auth.models import Group
 from authapp.models import CustomUser
 
@@ -56,6 +57,17 @@ class CustomUserFilter(filters.FilterSet):
         method='filter_exclude_users',
         help_text="Exclude specific user IDs (comma-separated string '1,2,3' or list [1,2,3])"
     )
+
+    group = filters.CharFilter(
+        field_name='groups__name',
+        lookup_expr='iexact',
+        help_text="Filter users by a single group name"
+    )
+    search = filters.CharFilter(
+        method='filter_search',
+        help_text="Search users by email, first name, last name, or phone"
+    )
+
     
     class Meta:
         model = CustomUser
@@ -105,3 +117,12 @@ class CustomUserFilter(filters.FilterSet):
             return queryset
         
         return queryset.exclude(id__in=user_ids_to_exclude)
+
+    def filter_search(self, queryset, name, value):
+        """Custom search filter across multiple fields"""
+        return queryset.filter(
+            Q(email__icontains=value) |
+            Q(first_name__icontains=value) |
+            Q(last_name__icontains=value) |
+            Q(phone__icontains=value)
+        )
