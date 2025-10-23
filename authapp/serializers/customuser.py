@@ -8,6 +8,36 @@ class CustomUserCreateSerializer(BaseSerializer):
         model = CustomUser
         fields = "__all__"
 
+    def create(self, validated_data):
+        # Handle password and groups (many-to-many)
+        password = validated_data.pop('password', None)
+        groups = validated_data.pop('groups', None)
+        # also support singular 'group' for backward compatibility
+        if groups is None:
+            groups = validated_data.pop('group', None)
+
+        user = CustomUser(**validated_data)
+        if password:
+            user.set_password(password)
+        user.save()
+
+        # Set groups correctly using set(); accept list of ids or Group instances
+        if groups is not None:
+            from django.contrib.auth.models import Group
+            # if groups is a single Group instance, wrap into list
+            if not isinstance(groups, (list, tuple)):
+                groups = [groups]
+
+            # if provided as ints (ids), resolve to Group queryset
+            if groups and all(isinstance(g, int) for g in groups):
+                qs = Group.objects.filter(id__in=groups)
+                user.groups.set(qs)
+            else:
+                # assume Group instances or other iterable acceptable to set()
+                user.groups.set(groups)
+
+        return user
+
 class CustomUserListSerializer(BaseSerializer):
     user_type = serializers.ReadOnlyField()
     groups = serializers.StringRelatedField(many=True, read_only=True)
@@ -102,3 +132,30 @@ class CustomUserUpdateSerializer(BaseSerializer):
     class Meta:
         model = CustomUser
         exclude = ['last_login', 'is_superuser', 'is_staff', 'date_joined']
+    
+    def update(self, instance, validated_data):
+        # Handle password if provided
+        password = validated_data.pop('password', None)
+        groups = validated_data.pop('groups', None)
+
+        # Apply other fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if password:
+            instance.set_password(password)
+
+        instance.save()
+
+        # Update groups if provided
+        if groups is not None:
+            from django.contrib.auth.models import Group
+            if not isinstance(groups, (list, tuple)):
+                groups = [groups]
+            if groups and all(isinstance(g, int) for g in groups):
+                qs = Group.objects.filter(id__in=groups)
+                instance.groups.set(qs)
+            else:
+                instance.groups.set(groups)
+
+        return instance

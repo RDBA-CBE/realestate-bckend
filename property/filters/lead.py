@@ -17,7 +17,7 @@ class LeadFilter(django_filters.FilterSet):
     budget_max_lte = django_filters.NumberFilter(field_name='budget_max', lookup_expr='lte')
 
     property_type = django_filters.CharFilter(field_name='interested_property__property_type', lookup_expr='iexact')
-    group = django_filters.CharFilter(method='group_filter', label='Group')
+    group = django_filters.BaseInFilter(method='group_filter', label='Group')
     # Text search filters
     search = django_filters.CharFilter(method='search_filter', label='Search')
 
@@ -43,9 +43,11 @@ class LeadFilter(django_filters.FilterSet):
         )
     
     def group_filter(self, queryset, name, value):
-        """Filter leads by user group"""
-        return queryset.filter(Q(assigned_to__groups__name__iexact=value) |
-                               Q(created_by__groups__name__iexact=value)).distinct()
+        """Filter leads by user group ID"""
+        return queryset.filter(
+            Q(assigned_to__groups__id__in=value) |
+            Q(created_by__groups__id__in=value)
+        ).distinct()
 
     def active_filter(self, queryset, name, value):
         """Filter for active leads (not won, lost, or cancelled)"""

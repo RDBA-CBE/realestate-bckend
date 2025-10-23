@@ -45,6 +45,14 @@ from authapp.serializers.password_reset import (
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer,
 )
+from authapp.serializers.group import (
+    GroupListSerializer,
+    GroupDetailSerializer,
+    GroupCreateSerializer,
+    GroupUpdateSerializer,
+    AddUsersToGroupSerializer,
+    RemoveUsersFromGroupSerializer,
+)
 
 
 __all__ = [
