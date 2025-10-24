@@ -241,7 +241,6 @@ class Property(BaseModel):
         indexes = [
             models.Index(fields=['city', 'property_type']),
             models.Index(fields=['listing_type', 'status']),
-            models.Index(fields=['price']),
             models.Index(fields=['created_at']),
         ]
 
@@ -249,9 +248,11 @@ class Property(BaseModel):
         return f"{self.title} - {self.city}"
 
     def save(self, *args, **kwargs):
-        # Auto-calculate price per square foot
-        if self.price and self.total_area:
-            self.price_per_sqft = self.price / self.total_area
+        if self.minimum_price and self.maximum_price and self.total_area:
+            avg_price = (self.minimum_price + self.maximum_price) / 2
+            self.price_per_sqft = avg_price / self.total_area
+        else:
+            self.price_per_sqft = None
         
         # Generate slug if not provided
         if not self.slug:

@@ -29,12 +29,18 @@ class PropertyListSerializer(BaseSerializer):
     agent = CustomUserListSerializer(read_only=True)
     created_by = CustomUserListSerializer(read_only=True)
     user_wishlists = serializers.SerializerMethodField()
-
+    price_range = serializers.SerializerMethodField()
 
     class Meta:
         model = Property
         fields = '__all__'
     
+    def get_price_range(self, obj):
+        return {
+            "minimum_price": obj.minimum_price,
+            "maximum_price": obj.maximum_price
+        }
+
     def get_primary_image(self, obj):
         primary_image = obj.images.filter(is_primary=True).first()
         if primary_image:
@@ -82,7 +88,8 @@ class PropertyDetailSerializer(BaseSerializer):
     amenities = AmenityListSerializer(many=True, read_only=True)
     floor_plans = FloorPlanListSerializer(many=True, read_only=True)
     user_wishlists = serializers.SerializerMethodField()
-    
+    price_range = serializers.SerializerMethodField()
+
     class Meta:
         model = Property
         fields = '__all__'
@@ -90,9 +97,16 @@ class PropertyDetailSerializer(BaseSerializer):
             'project_details', 'property_type_details', 'owner_details', 
             'agent_details','images', 'amenities_details', 'full_address', 
             'is_available', 'average_rating', 'total_reviews', 'total_images', 
-            'primary_image','floor_plans', 'user_wishlists'
+            'primary_image','floor_plans', 'user_wishlists', 'price_range',
+            'minimum_price', 'maximum_price'
         ]
     
+    def get_price_range(self, obj):
+        return {
+            "minimum_price": obj.minimum_price,
+            "maximum_price": obj.maximum_price
+        }
+
     def get_fields(self):
         fields = super().get_fields()
         # Add extra fields to the serializer

@@ -6,7 +6,7 @@ from .models import (
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
-    list_display = ['title', 'city', 'status', 'price', 'listing_type', 'created_at']
+    list_display = ['title', 'city', 'status', 'listing_type', 'created_at']
     list_filter = ['status', 'listing_type', 'property_type', 'city', 'state']
     search_fields = ['title', 'city', 'address']
     readonly_fields = ['created_at', 'updated_at', 'price_per_sqft', 'views_count', 'approved_at']

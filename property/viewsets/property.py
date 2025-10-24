@@ -47,8 +47,8 @@ class PropertyViewSet(BaseViewSet):
 
         # Get min & max price from full filtered queryset
         price_stats = queryset.aggregate(
-            min_price=Min("price"),
-            max_price=Max("price")
+            min_price=Min("minimum_price"),
+            max_price=Max("maximum_price")
         )
 
         # If paginated, wrap response in pagination format
