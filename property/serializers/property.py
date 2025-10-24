@@ -136,7 +136,7 @@ class PropertyCreateSerializer(BaseSerializer):
         many=True,
         required=False
     )
-    
+
     class Meta:
         model = Property
         fields = '__all__'
@@ -185,12 +185,12 @@ class PropertyUpdateSerializer(BaseSerializer):
     class Meta:
         model = Property
         fields = [
-            'title', 'description', 'status', 'price', 'address', 'city', 'state', 'country', 
+            'title', 'description', 'status', 'address', 'city', 'state', 'country', 
             'postal_code', 'bedrooms', 'bathrooms', 'total_area', 'carpet_area',
             'plot_area', 'land_type_zone', 'built_up_area', 'balconies', 
             'facing_direction', 'monthly_rent', 'rent_duration', 'listing_type',
             'lease_total_amount', 'lease_duration', 'furnishing', 'parking',
             'parking_spaces', 'available_from', 'is_featured', 'project',
             'property_type', 'agent', 'developer', 'amenities','highlightes', 
-            'rera_id','is_approved'
+            'rera_id','is_approved', 'minimum_price', 'maximum_price'
         ]

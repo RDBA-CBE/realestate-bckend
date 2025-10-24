@@ -133,7 +133,6 @@ class Property(BaseModel):
     )
 
     # Pricing Information
-    price = models.DecimalField(max_digits=15, decimal_places=2)
     price_per_sqft = models.DecimalField(
         max_digits=10, 
         decimal_places=2, 
@@ -217,6 +216,21 @@ class Property(BaseModel):
     highlightes = models.TextField(
         blank=True,
         help_text="Comma-separated highlighted features"
+    )
+
+    minimum_price = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Minimum price for properties with price range"
+    )
+    maximum_price = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Maximum price for properties with price range"
     )
 
 
