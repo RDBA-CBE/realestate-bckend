@@ -89,6 +89,7 @@ class PropertyDetailSerializer(BaseSerializer):
     floor_plans = FloorPlanListSerializer(many=True, read_only=True)
     user_wishlists = serializers.SerializerMethodField()
     price_range = serializers.SerializerMethodField()
+    
 
     class Meta:
         model = Property
@@ -206,5 +207,6 @@ class PropertyUpdateSerializer(BaseSerializer):
             'lease_total_amount', 'lease_duration', 'furnishing', 'parking',
             'parking_spaces', 'available_from', 'is_featured', 'project',
             'property_type', 'agent', 'developer', 'amenities','highlightes', 
-            'rera_id','is_approved', 'minimum_price', 'maximum_price'
+            'rera_id','is_approved', 'minimum_price', 'maximum_price', 'price_per_sqft',
+            'latitude', 'longitude'
         ]

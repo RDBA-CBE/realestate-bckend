@@ -64,3 +64,20 @@ class PropertyViewSet(BaseViewSet):
             "max_price": price_stats["max_price"],
             "results": serializer.data
         }, status=status.HTTP_200_OK)
+    
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        user = request.user
+
+        # Check if the user has already made an inquiry for this property
+        has_inquired = False
+        if user.is_authenticated:
+            from ..models import Lead
+            has_inquired = Lead.objects.filter(interested_property=instance, created_by=user).exists()
+
+        # Get the original response data
+        response = super().retrieve(request, *args, **kwargs)
+        response.data['has_inquired'] = has_inquired
+
+        return response

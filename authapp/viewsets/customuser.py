@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from common.paginator import Pagination
 from authapp.filters import CustomUserFilter
 from authapp.models import CustomUser
@@ -18,11 +19,11 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     filterset_class = CustomUserFilter
     pagination_class = Pagination
 
-    def get_queryset(self):
-        user = self.request.user
-        if user.groups.filter(name="Admin").exists():
-            return CustomUser.objects.exclude(id=user.id)
-        return (CustomUser.objects.exclude(id=user.id).exclude(groups__name="Admin"))
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     if user.groups.filter(name="Admin").exists():
+    #         return CustomUser.objects.exclude(id=user.id)
+    #     return CustomUser.objects.filter(id=user.id)
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -35,4 +36,5 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             return CustomUserUpdateSerializer
         return CustomUserDetailSerializer
 
-    
+
+

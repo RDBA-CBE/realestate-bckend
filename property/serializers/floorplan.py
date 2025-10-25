@@ -6,7 +6,7 @@ class PropertySimpleSerializer(serializers.ModelSerializer):
     """Simple serializer for property basic info"""
     class Meta:
         model = Property
-        fields = ['id', 'title', 'city', 'state', 'status', 'price', 'listing_type']
+        fields = ['id', 'title', 'city', 'state', 'status', 'listing_type']
 
 
 class FloorPlanListSerializer(serializers.ModelSerializer):
