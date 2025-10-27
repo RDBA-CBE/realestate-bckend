@@ -17,11 +17,16 @@ class PropertyFilter(django_filters.FilterSet):
             ('agent__first_name', 'agent'),
             ('developer__first_name', 'developer'),
             ("property_type__name", "property_type"),
-            ("created_at", "created_at")
+            ("created_at", "created_at"),
+            ("minimum_price", "minimum_price"),
+            ("maximum_price", "maximum_price"),
+
+
         )
     )
-    
-    group = django_filters.CharFilter(field_name='created_by__groups__name', lookup_expr='icontains')
+
+    group = django_filters.CharFilter(method='filter_groups', help_text="Filter properties by group names")
+
     assigned_to_developer = django_filters.CharFilter(
         method='filter_assigned_to_developer',
         help_text="Filter properties assigned to a specific developer by developer's email"
@@ -34,6 +39,8 @@ class PropertyFilter(django_filters.FilterSet):
         method='filter_search',
         help_text="Search in title, description, address, city, state, and zip code"
     )
+    min_price = django_filters.NumberFilter(field_name='minimum_price', lookup_expr='gte')
+    max_price = django_filters.NumberFilter(field_name='maximum_price', lookup_expr='lte')
 
 
 
@@ -43,7 +50,7 @@ class PropertyFilter(django_filters.FilterSet):
             'city', 'state', 'status', 'property_type', 'project', 'listing_type',
             'agent', 'bedrooms', 'bathrooms', 'furnishing', 'parking', 'facing_direction',
             'developer', 'land_type_zone', 'is_featured', 'is_verified', 'is_approved',
-            'created_by', 'sort_by', 'search', 'group'
+            'created_by', 'sort_by', 'search', 'group', 'min_price', 'max_price',
         ]
 
     def filter_search(self, queryset, name, value):
@@ -67,5 +74,15 @@ class PropertyFilter(django_filters.FilterSet):
         return queryset.filter(
             Q(agent_id=value) | Q(created_by_id=value)
         )
+
+    def filter_groups(self, queryset, name, value):
+        """Filter properties by group names"""
+        group_names = [group.strip() for group in value.split(',')]
+        return queryset.filter(
+            Q(agent__groups__name__in=group_names) |
+            Q(developer__groups__name__in=group_names) |
+            Q(created_by__groups__name__in=group_names)
+        ).distinct()
+
 
 

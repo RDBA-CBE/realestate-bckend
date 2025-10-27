@@ -35,4 +35,4 @@ class VirtualTour(BaseModel):
         unique_together = [['property', 'order']]
 
     def __str__(self):
-        return f"Virtual Tour: {self.title} for {self.property.title}"
+        return f"Virtual Tour: {self.tour_type} for {self.property.title}"

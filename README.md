@@ -36,30 +36,17 @@ The project is organized into two main Django apps:
 ### Installation
 
 1.  **Clone the repository:**
-
-    ```bash
-    git clone https://github.com/your-username/real-estate-api.git
-    ```
-
-2.  **Install the dependencies:**
-
-    ```bash
     pip install -r requirements.txt
     ```
 
 3.  **Run the database migrations:**
-
-    ```bash
     python manage.py migrate
     ```
-
 4.  **Start the development server:**
 
     ```bash
-    python manage.py runserver
     ```
 
-The API will be accessible at `http://127.0.0.1:8000/`.
 
 ## API Documentation
 

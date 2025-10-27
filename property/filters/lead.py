@@ -18,6 +18,9 @@ class LeadFilter(django_filters.FilterSet):
 
     property_type = django_filters.CharFilter(field_name='interested_property__property_type', lookup_expr='iexact')
     group = django_filters.BaseInFilter(method='group_filter', label='Group')
+
+    assigned_to_group = django_filters.BaseInFilter(field_name='assigned_to__groups__id', lookup_expr='in')
+    created_by_group = django_filters.BaseInFilter(field_name='created_by__groups__id', lookup_expr='in')
     # Text search filters
     search = django_filters.CharFilter(method='search_filter', label='Search')
 

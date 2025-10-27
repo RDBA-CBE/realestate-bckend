@@ -16,7 +16,7 @@ class VirtualTourCreateSerializer(serializers.ModelSerializer):
         model = VirtualTour
         fields = [
             'property', 'tour_url', 'tour_type', 'description', 
-            'thumbnail', 'provider', 'embed_code', 'is_active', 'order'
+            'thumbnail', 'provider', 'embed_code', 'order'
         ]
 
 class VirtualTourUpdateSerializer(serializers.ModelSerializer):

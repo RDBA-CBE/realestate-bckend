@@ -7,6 +7,7 @@ from authapp.serializers.customuser import CustomUserListSerializer
 class LeadListSerializer(BaseSerializer):
     property_details = PropertyListSerializer(source='interested_property', read_only=True)
     assigned_to_details = CustomUserListSerializer(source='assigned_to', read_only=True)
+    assigned_by_details = CustomUserListSerializer(source='assigned_by', read_only=True)
     full_name = serializers.SerializerMethodField()
     days_since_last_contact = serializers.SerializerMethodField()
     days_until_next_follow_up = serializers.SerializerMethodField()
@@ -20,7 +21,7 @@ class LeadListSerializer(BaseSerializer):
             'days_since_last_contact', 'days_until_next_follow_up',
             'budget_min', 'budget_max', 'preferred_location', 'requirements',
             'created_at','created_by', 'company_name', 'occupation', 'address', 'city', 'state', 'country', 'postal_code',
-            'newsletter_subscribed', 'sms_marketing'
+            'newsletter_subscribed', 'sms_marketing','assigned_by_details'
         ]
 
     def get_full_name(self, obj):
